@@ -9,5 +9,5 @@ export interface Player {
   reception: number;
   consistency: number;
   stamina: number;
-  overall?: number;
+  overall: number;
 }

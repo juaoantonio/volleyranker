@@ -8,6 +8,15 @@ export const Players = () => {
   if (isLoading)
     return <p className="text-center text-gray-600">Carregando...</p>;
 
+  if (!players?.length) {
+    return (
+      <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6 text-center">
+        <p className="text-gray-600">Nenhum jogador cadastrado.</p>
+      </div>
+    );
+  }
+
+  players.sort((a, b) => b.overall - a.overall);
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">

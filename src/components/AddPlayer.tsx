@@ -38,6 +38,7 @@ export const AddPlayer = () => {
       player.consistency * 0.1 +
       player.stamina * 0.05
     ).toFixed(2);
+    console.log(overall);
 
     addMutation.mutate({ ...player, overall: Number(overall) });
 
@@ -95,7 +96,6 @@ export const AddPlayer = () => {
                   name={name}
                   value={player[name as keyof Player]}
                   onChange={handleChange}
-                  min="0"
                   max="5"
                   className="w-full p-2 focus:outline-none"
                 />

@@ -86,7 +86,6 @@ export const EditPlayer = ({ player, onClose }: Props) => {
                     player[name as keyof Player]
                   }
                   onChange={handleChange}
-                  min="0"
                   max="5"
                   className="w-full p-2 focus:outline-none"
                 />

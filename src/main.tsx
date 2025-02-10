@@ -8,6 +8,7 @@ import { Players } from "./pages/Players.tsx";
 import { ToastContainer } from "react-toastify";
 import { Login } from "./components/Login.tsx";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
+import { PlayerDetail } from "./components/PlayerDetail.tsx";
 
 export const queryClient = new QueryClient();
 
@@ -30,6 +31,14 @@ createRoot(document.getElementById("root")!).render(
             element={
               <ProtectedRoute>
                 <AddPlayer />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/player/:id"
+            element={
+              <ProtectedRoute>
+                <PlayerDetail />
               </ProtectedRoute>
             }
           />

@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { usePlayers } from "../hooks/usePlayers";
 import { Player } from "../types/player";
 import { User } from "lucide-react";
 import { playerAttributes } from "../constants.tsx";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
+import { storage } from "../services/firebase.ts";
 
 export const AddPlayer = () => {
   const { addMutation } = usePlayers();
@@ -17,18 +19,37 @@ export const AddPlayer = () => {
     consistency: 5,
     stamina: 5,
     overall: 5,
+    imageUrl: "",
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
+  // ✅ Atualiza os valores dos inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setPlayer((prev) => ({
       ...prev,
-      [name]: name === "name" ? value : Number(value), // Converte valores numéricos
+      [name]: name === "name" ? value : Number(value),
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // ✅ Lida com o upload da imagem e armazena temporariamente no estado
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      const previewUrl = URL.createObjectURL(file);
+      setPlayer((prev) => ({
+        ...prev,
+        imageUrl: previewUrl, // Mostra a prévia da imagem no frontend
+      }));
+    }
+  };
+
+  // ✅ Enviar dados do jogador para o Firebase Firestore
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+
+    // ✅ Calcula o Overall do jogador
     const overall = (
       player.attack * 0.2 +
       player.serve * 0.15 +
@@ -39,11 +60,24 @@ export const AddPlayer = () => {
       player.consistency * 0.1 +
       player.stamina * 0.05
     ).toFixed(2);
-    console.log(overall);
 
-    addMutation.mutate({ ...player, overall: Number(overall) });
+    let imageUrl = "";
 
-    // Resetar formulário após envio
+    // ✅ Se houver uma imagem, faz o upload para Firebase Storage
+    if (imageFile) {
+      const imageRef = ref(storage, `players/${imageFile.name}`);
+      await uploadBytes(imageRef, imageFile);
+      imageUrl = await getDownloadURL(imageRef);
+    }
+
+    // ✅ Salva os dados no Firestore
+    addMutation.mutate({
+      ...player,
+      overall: Number(overall),
+      imageUrl,
+    });
+
+    // ✅ Reseta o formulário após envio
     setPlayer({
       name: "",
       attack: 5,
@@ -55,7 +89,9 @@ export const AddPlayer = () => {
       consistency: 5,
       stamina: 5,
       overall: 5,
+      imageUrl: "",
     });
+    setImageFile(null);
   };
 
   return (
@@ -82,6 +118,26 @@ export const AddPlayer = () => {
               className="w-full p-2 focus:outline-none"
             />
           </div>
+        </div>
+
+        {/* Upload de Imagem */}
+        <div>
+          <label className="block text-gray-700 font-medium mb-1">
+            Foto do Jogador:
+          </label>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full p-2 border rounded-md"
+          />
+          {player.imageUrl && (
+            <img
+              src={player.imageUrl}
+              alt="Imagem do jogador"
+              className="mt-2 w-24 h-24 rounded-full object-cover"
+            />
+          )}
         </div>
 
         {/* Grid de Atributos */}

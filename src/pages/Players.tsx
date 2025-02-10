@@ -1,6 +1,6 @@
 import { usePlayers } from "../hooks/usePlayers";
 import { Link } from "react-router-dom";
-import { Eye, Pencil, Trash2 } from "lucide-react";
+import { Eye, Pencil, Trash2, User } from "lucide-react";
 
 export const Players = () => {
   const { players, isLoading, removeMutation } = usePlayers();
@@ -17,6 +17,7 @@ export const Players = () => {
   }
 
   players.sort((a, b) => b.overall - a.overall);
+
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
@@ -29,11 +30,29 @@ export const Players = () => {
             key={player.id}
             className="flex flex-col md:flex-row items-center md:justify-between p-4 border rounded-lg shadow-sm bg-gray-50"
           >
-            <div className="text-lg font-semibold flex flex-col md:flex-row items-center gap-2">
-              🏐 {player.name} -
-              <span className="text-blue-600">Overall: {player.overall}</span>
+            {/* Exibição da Imagem */}
+            <div className="flex items-center gap-4">
+              {player.imageUrl ? (
+                <img
+                  src={player.imageUrl}
+                  alt={player.name}
+                  className="w-16 h-16 rounded-full object-cover border border-gray-300 shadow-sm"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                  <User size={32} className="text-gray-500" />
+                </div>
+              )}
+
+              <div className="text-lg font-semibold">
+                <span>🏐 {player.name}</span>
+                <span className="block text-blue-600">
+                  Overall: {player.overall}
+                </span>
+              </div>
             </div>
 
+            {/* Ações */}
             <div className="flex flex-wrap justify-center md:justify-end gap-3 mt-3 md:mt-0">
               <Link
                 to={`/admin/player/${player.id}`}

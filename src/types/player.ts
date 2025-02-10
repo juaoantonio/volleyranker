@@ -10,4 +10,5 @@ export interface Player {
   consistency: number;
   stamina: number;
   overall: number;
+  imageUrl?: string;
 }

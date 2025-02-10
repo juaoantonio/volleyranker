@@ -11,6 +11,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { Player } from "../types/player";
+import { getStorage } from "firebase/storage";
 
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
@@ -24,6 +25,7 @@ const firebaseConfig = {
 // ✅ Inicializa o Firebase App e Firestore
 const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const storage = getStorage(app);
 
 export const playerCollection = collection(db, "players");
 

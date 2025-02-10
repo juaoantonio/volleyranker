@@ -29,7 +29,7 @@ export const PlayerDetail = () => {
           <strong>Ataque:</strong> {player.attack}
         </p>
         <p>
-          <strong>Força de Saque:</strong> {player.serve}
+          <strong>Eficiência no Saque:</strong> {player.serve}
         </p>
         <p>
           <strong>Levantamento:</strong> {player.set}

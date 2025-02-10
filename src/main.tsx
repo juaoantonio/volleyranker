@@ -5,8 +5,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { AddPlayer } from "./components/AddPlayer.tsx";
 import { Players } from "./pages/Players.tsx";
-import { Navbar } from "./components/Navbar.tsx";
 import { ToastContainer } from "react-toastify";
+import { Login } from "./components/Login.tsx";
+import { ProtectedRoute } from "./ProtectedRoute.tsx";
 
 export const queryClient = new QueryClient();
 
@@ -14,13 +15,25 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
-        <Navbar />
-        <div className="p-6">
-          <Routes>
-            <Route path="/" element={<Players />} />
-            <Route path="/add" element={<AddPlayer />} />
-          </Routes>
-        </div>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Players />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/add"
+            element={
+              <ProtectedRoute>
+                <AddPlayer />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
         <ToastContainer />
       </QueryClientProvider>
     </BrowserRouter>

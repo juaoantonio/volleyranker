@@ -1,17 +1,8 @@
 import { useState } from "react";
 import { usePlayers } from "../hooks/usePlayers";
 import { Player } from "../types/player";
-import {
-  Hand,
-  HandHelping,
-  Heart,
-  MapPin,
-  Repeat,
-  Shield,
-  Target,
-  User,
-  Volleyball,
-} from "lucide-react";
+import { User } from "lucide-react";
+import { playerAttributes } from "../constants.tsx";
 
 export const AddPlayer = () => {
   const { addMutation } = usePlayers();
@@ -92,51 +83,10 @@ export const AddPlayer = () => {
 
         {/* Grid de Atributos */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {[
-            {
-              label: "Ataque",
-              name: "attack",
-              icon: <Target size={20} className="text-red-500" />,
-            },
-            {
-              label: "Força de Saque",
-              name: "serve",
-              icon: <Volleyball size={20} className="text-orange-500" />,
-            },
-            {
-              label: "Levantamento",
-              name: "set",
-              icon: <Hand size={20} className="text-yellow-500" />,
-            },
-            {
-              label: "Defesa",
-              name: "defense",
-              icon: <Shield size={20} className="text-green-500" />,
-            },
-            {
-              label: "Posicionamento",
-              name: "positioning",
-              icon: <MapPin size={20} className="text-blue-500" />,
-            },
-            {
-              label: "Recepção",
-              name: "reception",
-              icon: <HandHelping size={20} className="text-indigo-500" />,
-            },
-            {
-              label: "Constância",
-              name: "consistency",
-              icon: <Repeat size={20} className="text-purple-500" />,
-            },
-            {
-              label: "Resistência Física",
-              name: "stamina",
-              icon: <Heart size={20} className="text-pink-500" />,
-            },
-          ].map(({ label, name, icon }) => (
+          {playerAttributes.map(({ label, name, icon }) => (
             <div key={name}>
               <label className="block text-gray-700 font-medium mb-1">
-                {label}:
+                {label} (0 a 5):
               </label>
               <div className="flex items-center border p-2 rounded-md gap-2">
                 {icon}
@@ -146,7 +96,7 @@ export const AddPlayer = () => {
                   value={player[name as keyof Player]}
                   onChange={handleChange}
                   min="0"
-                  max="10"
+                  max="5"
                   className="w-full p-2 focus:outline-none"
                 />
               </div>

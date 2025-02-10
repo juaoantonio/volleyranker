@@ -16,6 +16,7 @@ export const AddPlayer = () => {
     reception: 5,
     consistency: 5,
     stamina: 5,
+    overall: 5,
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,6 +54,7 @@ export const AddPlayer = () => {
       reception: 5,
       consistency: 5,
       stamina: 5,
+      overall: 5,
     });
   };
 

@@ -12,6 +12,7 @@ import { PlayerDetail } from "./components/PlayerDetail.tsx";
 import { EditPlayer } from "./components/EditPlayer.tsx";
 import { PlayersView } from "./components/PlayersView.tsx";
 import { PublicRoute } from "./PublicRoute.tsx";
+import { TeamGenerator } from "./components/TeamGenerator.tsx";
 
 export const queryClient = new QueryClient();
 
@@ -59,6 +60,15 @@ createRoot(document.getElementById("root")!).render(
             element={
               <PublicRoute>
                 <PlayersView />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/team"
+            element={
+              <PublicRoute>
+                <TeamGenerator />
               </PublicRoute>
             }
           />

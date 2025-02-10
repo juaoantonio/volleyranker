@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { Home, PlusCircle, Volleyball } from "lucide-react";
+import { Home, PlusCircle, Users, Volleyball } from "lucide-react";
 
 export const Navbar = () => {
   return (
@@ -28,6 +28,13 @@ export const Navbar = () => {
           >
             <PlusCircle size={20} />{" "}
             <span className="hidden sm:inline">Adicionar Jogador</span>
+          </Link>
+          <Link
+            to="/team"
+            className="text-white flex items-center gap-2 hover:text-yellow-300 transition duration-300"
+          >
+            <Users size={20} />{" "}
+            <span className="hidden sm:inline">Gerar Times</span>
           </Link>
         </div>
       </div>

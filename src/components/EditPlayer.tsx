@@ -171,7 +171,7 @@ export const EditPlayer = () => {
           </button>
           <button
             type="submit"
-            className="px-4 py-2 flex gap-2 bg  -green-500  items-center text-white rounded-md hover:bg-green-600 transition duration-300"
+            className="px-4 py-2 flex gap-2 bg-green-500  items-center text-white rounded-md hover:bg-green-600 transition duration-300"
           >
             <Check size={18} /> Atualizar Jogador
           </button>

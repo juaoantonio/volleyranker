@@ -1,17 +1,25 @@
 import { FormEvent, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { usePlayers } from "../hooks/usePlayers";
 import { Player } from "../types/player";
-import { User } from "lucide-react";
+import { ArrowLeft, User } from "lucide-react";
 import { playerAttributes } from "../constants.tsx";
 
-interface Props {
-  player: Player;
-  onClose: () => void;
-}
+export const EditPlayer = () => {
+  const { id } = useParams<{ id: string }>();
+  const { players, updateMutation } = usePlayers();
+  const navigate = useNavigate();
 
-export const EditPlayer = ({ player, onClose }: Props) => {
-  const { updateMutation } = usePlayers();
-  const [updatedPlayer, setUpdatedPlayer] = useState<Partial<Player>>(player);
+  // Busca o jogador pelo ID
+  const player = players?.find((p) => p.id === id);
+
+  const [updatedPlayer, setUpdatedPlayer] = useState<Partial<Player>>(
+    player || {},
+  );
+
+  if (!player) {
+    return <p className="text-center text-red-500">Jogador não encontrado.</p>;
+  }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -41,11 +49,15 @@ export const EditPlayer = ({ player, onClose }: Props) => {
       updatedPlayer: { ...updatedPlayer, overall: Number(overall) },
     });
 
-    onClose();
+    navigate("/"); // Redireciona para a listagem após atualização
   };
 
   return (
     <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6">
+      <Link to="/" className="text-blue-500 flex items-center gap-2 mb-4">
+        <ArrowLeft size={18} /> Voltar para o Ranking
+      </Link>
+
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-4 flex items-center gap-2">
         ✏️ <User size={28} className="text-green-500" /> Editar Jogador
       </h2>
@@ -98,7 +110,7 @@ export const EditPlayer = ({ player, onClose }: Props) => {
         <div className="flex justify-end gap-4">
           <button
             type="button"
-            onClick={onClose}
+            onClick={() => navigate("/")}
             className="px-4 py-2 bg-gray-400 text-white rounded-md hover:bg-gray-500 transition duration-300"
           >
             Cancelar

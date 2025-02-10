@@ -9,6 +9,7 @@ import { ToastContainer } from "react-toastify";
 import { Login } from "./components/Login.tsx";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
 import { PlayerDetail } from "./components/PlayerDetail.tsx";
+import { EditPlayer } from "./components/EditPlayer.tsx";
 
 export const queryClient = new QueryClient();
 
@@ -31,6 +32,14 @@ createRoot(document.getElementById("root")!).render(
             element={
               <ProtectedRoute>
                 <AddPlayer />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/edit/:id"
+            element={
+              <ProtectedRoute>
+                <EditPlayer />
               </ProtectedRoute>
             }
           />

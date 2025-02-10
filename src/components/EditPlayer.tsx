@@ -54,7 +54,7 @@ export const EditPlayer = () => {
 
   return (
     <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6">
-      <Link to="/" className="text-blue-500 flex items-center gap-2 mb-4">
+      <Link to="/admin" className="text-blue-500 flex items-center gap-2 mb-4">
         <ArrowLeft size={18} /> Voltar para o Ranking
       </Link>
 

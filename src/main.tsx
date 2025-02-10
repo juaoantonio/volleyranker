@@ -10,6 +10,8 @@ import { Login } from "./components/Login.tsx";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
 import { PlayerDetail } from "./components/PlayerDetail.tsx";
 import { EditPlayer } from "./components/EditPlayer.tsx";
+import { PlayersView } from "./components/PlayersView.tsx";
+import { PublicRoute } from "./PublicRoute.tsx";
 
 export const queryClient = new QueryClient();
 
@@ -20,7 +22,7 @@ createRoot(document.getElementById("root")!).render(
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route
-            path="/"
+            path="/admin/"
             element={
               <ProtectedRoute>
                 <Players />
@@ -28,15 +30,15 @@ createRoot(document.getElementById("root")!).render(
             }
           />
           <Route
-            path="/add"
+            path="/admin/add"
             element={
-              <ProtectedRoute>
+              <PublicRoute>
                 <AddPlayer />
-              </ProtectedRoute>
+              </PublicRoute>
             }
           />
           <Route
-            path="/edit/:id"
+            path="/admin/edit/:id"
             element={
               <ProtectedRoute>
                 <EditPlayer />
@@ -44,11 +46,20 @@ createRoot(document.getElementById("root")!).render(
             }
           />
           <Route
-            path="/player/:id"
+            path="/admin/player/:id"
             element={
-              <ProtectedRoute>
+              <PublicRoute>
                 <PlayerDetail />
-              </ProtectedRoute>
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="/"
+            element={
+              <PublicRoute>
+                <PlayersView />
+              </PublicRoute>
             }
           />
         </Routes>

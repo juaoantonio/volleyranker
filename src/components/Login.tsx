@@ -26,7 +26,7 @@ export const Login = () => {
 
   useEffect(() => {
     if (!user) return;
-    router("/");
+    router("/admin");
   }, [user, router]);
 
   const handleLogout = async () => {

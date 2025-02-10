@@ -7,7 +7,7 @@ export const Navbar = () => {
       <div className="max-w-4xl mx-auto flex justify-between items-center">
         {/* Logo Responsiva */}
         <Link
-          to="/"
+          to="/admin"
           className="text-white text-2xl font-bold flex items-center gap-2"
         >
           <Volleyball size={28} />
@@ -17,13 +17,13 @@ export const Navbar = () => {
         {/* Links de Navegação */}
         <div className="flex gap-6">
           <Link
-            to="/"
+            to="/admin"
             className="text-white flex items-center gap-2 hover:text-yellow-300 transition duration-300"
           >
             <Home size={20} /> <span className="hidden sm:inline">Ranking</span>
           </Link>
           <Link
-            to="/add"
+            to="/admin/add"
             className="text-white flex items-center gap-2 hover:text-yellow-300 transition duration-300"
           >
             <PlusCircle size={20} />{" "}

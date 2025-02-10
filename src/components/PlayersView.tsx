@@ -40,7 +40,7 @@ export const PlayersView = () => {
             {/* Botão apenas para visualizar detalhes */}
             <div className="flex justify-center md:justify-end gap-3 mt-3 md:mt-0">
               <Link
-                to={`/player/${player.id}`}
+                to={`/admin/player/${player.id}`}
                 className="flex items-center gap-2 px-4 py-2 text-indigo-500 border border-indigo-500 rounded-md hover:bg-indigo-500 hover:text-white transition duration-300"
               >
                 <Eye size={18} /> Ver Detalhes

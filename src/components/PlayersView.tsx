@@ -1,6 +1,6 @@
 import { usePlayers } from "../hooks/usePlayers";
 import { Link } from "react-router-dom";
-import { Eye } from "lucide-react";
+import { Eye, User } from "lucide-react";
 
 export const PlayersView = () => {
   const { players, isLoading } = usePlayers();
@@ -31,10 +31,27 @@ export const PlayersView = () => {
             key={player.id}
             className="flex flex-col md:flex-row items-center md:justify-between p-4 border rounded-lg shadow-sm bg-gray-50"
           >
-            {/* Informações do Jogador */}
-            <div className="text-lg font-semibold flex flex-col md:flex-row items-center gap-2">
-              🏐 {player.name} -
-              <span className="text-blue-600">Overall: {player.overall}</span>
+            {/* Imagem do Jogador */}
+            <div className="flex items-center gap-4">
+              {player.imageUrl ? (
+                <img
+                  src={player.imageUrl}
+                  alt={player.name}
+                  className="w-16 h-16 rounded-full object-cover border border-gray-300 shadow-sm"
+                />
+              ) : (
+                <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                  <User size={32} className="text-gray-500" />
+                </div>
+              )}
+
+              {/* Informações do Jogador */}
+              <div className="text-lg font-semibold">
+                <span>🏐 {player.name}</span>
+                <span className="block text-blue-600">
+                  Overall: {player.overall}
+                </span>
+              </div>
             </div>
 
             {/* Botão apenas para visualizar detalhes */}

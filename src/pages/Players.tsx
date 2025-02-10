@@ -21,36 +21,42 @@ export const Players = () => {
         {players?.map((player) => (
           <li
             key={player.id}
-            className="flex flex-col md:flex-row items-center justify-between p-4 border rounded-lg shadow-sm bg-gray-50"
+            className="flex flex-col md:flex-row items-center md:justify-between p-4 border rounded-lg shadow-sm bg-gray-50"
           >
-            <div className="text-lg font-semibold flex items-center gap-2">
+            {/* Informações do Jogador */}
+            <div className="text-lg font-semibold flex flex-col md:flex-row items-center gap-2 w-full md:w-auto text-center md:text-left">
               🏐 {player.name} -
               <span className="text-blue-600">Overall: {player.overall}</span>
             </div>
 
-            <div className="flex gap-3 mt-2 md:mt-0">
+            {/* Botões de Ação */}
+            <div className="flex flex-wrap justify-center md:justify-end gap-3 mt-3 md:mt-0 w-full md:w-auto">
               <Link
                 to={`/player/${player.id}`}
                 className="flex items-center gap-2 px-4 py-2 text-indigo-500 border border-indigo-500 rounded-md hover:bg-indigo-500 hover:text-white transition duration-300"
               >
-                <Eye size={18} /> Ver Detalhes
+                <Eye size={18} />{" "}
+                <span className="hidden sm:inline">Ver Detalhes</span>
               </Link>
 
               <button
                 onClick={() => setEditingPlayer(player.id!)}
                 className="flex items-center gap-2 px-4 py-2 text-blue-500 border border-blue-500 rounded-md hover:bg-blue-500 hover:text-white transition duration-300"
               >
-                <Pencil size={18} /> Editar
+                <Pencil size={18} />{" "}
+                <span className="hidden sm:inline">Editar</span>
               </button>
 
               <button
                 onClick={() => removeMutation.mutate(player.id!)}
                 className="flex items-center gap-2 px-4 py-2 text-red-500 border border-red-500 rounded-md hover:bg-red-500 hover:text-white transition duration-300"
               >
-                <Trash2 size={18} /> Remover
+                <Trash2 size={18} />{" "}
+                <span className="hidden sm:inline">Remover</span>
               </button>
             </div>
 
+            {/* Edição do Jogador */}
             {editingPlayer === player.id && (
               <div className="w-full mt-4">
                 <EditPlayer

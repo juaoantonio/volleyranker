@@ -13,7 +13,7 @@ export function calculateOverall(player: Player) {
       player.serve * 0.15 +
       player.set * 0.15 +
       player.defense * 0.15 +
-      player.block * 0.125 +
+      player.block * 0.1 +
       player.positioning * 0.1 +
       player.reception * 0.1 +
       player.consistency * 0.1

@@ -1,9 +1,8 @@
-import { ReactElement } from "react";
 import { useAuth } from "./hooks/useAuth.ts";
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 import { Navbar } from "./components/Navbar.tsx";
 
-export const ProtectedRoute = ({ children }: { children: ReactElement }) => {
+export const ProtectedRoute = () => {
   const { user, loading } = useAuth();
 
   if (loading)
@@ -13,7 +12,7 @@ export const ProtectedRoute = ({ children }: { children: ReactElement }) => {
   return (
     <>
       <Navbar />
-      {children}
+      <Outlet />
     </>
   );
 };

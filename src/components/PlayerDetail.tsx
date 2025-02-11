@@ -98,7 +98,7 @@ export const PlayerDetail = () => {
         </RadarChart>
       </ChartContainer>
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-gray-700">
+      <div className="grid grid-cols-2 md:grid-cols-3 text-sm gap-2 text-gray-700">
         <p>
           <strong>Ataque:</strong> {player.attack}
         </p>

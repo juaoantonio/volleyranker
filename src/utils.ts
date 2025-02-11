@@ -142,3 +142,126 @@ export function assignPosition(player: Player): Position {
 
   return bestPosition.name;
 }
+
+/**
+ * Calcula um overall avançado para um time de jogadores.
+ *
+ * O cálculo é feito em duas etapas:
+ * 1. Calcula as estatísticas agregadas do time (média de cada atributo).
+ * 2. Aplica um cálculo avançado que inclui:
+ *    - Uma nota base ponderada usando os mesmos pesos dos jogadores individuais.
+ *    - Um bônus de equilíbrio que valoriza times cujos jogadores apresentam atributos mais homogêneos.
+ *
+ * A nota final é limitada a um máximo de 5.
+ *
+ * @param team - Array de jogadores que compõem o time.
+ * @returns O overall avançado do time, com duas casas decimais.
+ */
+export interface TeamStats {
+  attack: number;
+  serve: number;
+  set: number;
+  defense: number;
+  block: number;
+  positioning: number;
+  reception: number;
+  consistency: number;
+  overall: number;
+}
+
+export function calculateTeamStatsForRadar(team: Player[]): TeamStats {
+  if (team.length === 0) {
+    return {
+      attack: 0,
+      serve: 0,
+      set: 0,
+      defense: 0,
+      block: 0,
+      positioning: 0,
+      reception: 0,
+      consistency: 0,
+      overall: 0,
+    };
+  }
+
+  // 1. Cálculo das estatísticas agregadas (média de cada atributo)
+  const aggregatedStats = {
+    attack: team.reduce((sum, p) => sum + p.attack, 0) / team.length,
+    serve: team.reduce((sum, p) => sum + p.serve, 0) / team.length,
+    set: team.reduce((sum, p) => sum + p.set, 0) / team.length,
+    defense: team.reduce((sum, p) => sum + p.defense, 0) / team.length,
+    block: team.reduce((sum, p) => sum + p.block, 0) / team.length,
+    positioning: team.reduce((sum, p) => sum + p.positioning, 0) / team.length,
+    reception: team.reduce((sum, p) => sum + p.reception, 0) / team.length,
+    consistency: team.reduce((sum, p) => sum + p.consistency, 0) / team.length,
+  };
+
+  // 2. Cálculo da nota base usando pesos definidos (os mesmos utilizados para jogadores)
+  const weights = {
+    attack: 0.18,
+    serve: 0.12,
+    set: 0.12,
+    defense: 0.17,
+    block: 0.13,
+    positioning: 0.1,
+    reception: 0.1,
+    consistency: 0.08,
+  };
+
+  const baseScore =
+    aggregatedStats.attack * weights.attack +
+    aggregatedStats.serve * weights.serve +
+    aggregatedStats.set * weights.set +
+    aggregatedStats.defense * weights.defense +
+    aggregatedStats.block * weights.block +
+    aggregatedStats.positioning * weights.positioning +
+    aggregatedStats.reception * weights.reception +
+    aggregatedStats.consistency * weights.consistency;
+
+  // 3. Cálculo do bônus de equilíbrio:
+  // Para cada atributo, calcula o desvio padrão entre os jogadores do time.
+  // Quanto menor o desvio, mais equilibrado o time (e maior o bônus).
+  const attributes = [
+    "attack",
+    "serve",
+    "set",
+    "defense",
+    "block",
+    "positioning",
+    "reception",
+    "consistency",
+  ] as const;
+
+  const stdevs = attributes.map((attr) => {
+    const mean = aggregatedStats[attr];
+    const variance =
+      team.reduce((acc, p) => acc + Math.pow(p[attr] - mean, 2), 0) /
+      team.length;
+    return Math.sqrt(variance);
+  });
+
+  // Média dos desvios padrões entre todos os atributos
+  const avgStdev =
+    stdevs.reduce((sum, stdev) => sum + stdev, 0) / stdevs.length;
+
+  // Valor máximo teórico de desvio padrão (ajustado para a escala de 0 a 5)
+  const maxPossibleStdev = 2.5;
+  // O bônus de equilíbrio varia de 0 (time muito desequilibrado) até 0.2 (time extremamente equilibrado)
+  const balanceBonus = (1 - Math.min(1, avgStdev / maxPossibleStdev)) * 0.2;
+
+  // 4. Nota avançada do time: soma da nota base e o bônus, limitada a 5
+  let overallScore = baseScore + balanceBonus;
+  overallScore = Math.min(5, overallScore);
+
+  return {
+    attack: Number(aggregatedStats.attack.toFixed(2)),
+    serve: Number(aggregatedStats.serve.toFixed(2)),
+    set: Number(aggregatedStats.set.toFixed(2)),
+    defense: Number(aggregatedStats.defense.toFixed(2)),
+    block: Number(aggregatedStats.block.toFixed(2)),
+    positioning: Number(aggregatedStats.positioning.toFixed(2)),
+    reception: Number(aggregatedStats.reception.toFixed(2)),
+    consistency: Number(aggregatedStats.consistency.toFixed(2)),
+    overall: Number(overallScore.toFixed(2)),
+  };
+}

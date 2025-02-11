@@ -1,6 +1,7 @@
 import { usePlayers } from "../hooks/usePlayers";
 import { Link } from "react-router-dom";
 import { Eye, Pencil, Trash2, User } from "lucide-react";
+import { calculateOverall } from "../utils.ts";
 
 export const Players = () => {
   const { players, isLoading, removeMutation } = usePlayers();
@@ -16,7 +17,7 @@ export const Players = () => {
     );
   }
 
-  players.sort((a, b) => b.overall - a.overall);
+  players.sort((a, b) => calculateOverall(b) - calculateOverall(a));
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -47,7 +48,7 @@ export const Players = () => {
               <div className="text-lg font-semibold">
                 <span>🏐 {player.name}</span>
                 <span className="block text-blue-600">
-                  Overall: {player.overall}
+                  Overall: {calculateOverall(player)}
                 </span>
               </div>
             </div>

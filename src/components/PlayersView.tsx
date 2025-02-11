@@ -1,7 +1,7 @@
 import { usePlayers } from "../hooks/usePlayers";
 import { Link } from "react-router-dom";
 import { Crown, Eye, User } from "lucide-react";
-import { cn } from "../utils.ts";
+import { calculateOverall, cn } from "../utils.ts";
 
 export const PlayersView = () => {
   const { players, isLoading } = usePlayers();
@@ -18,7 +18,9 @@ export const PlayersView = () => {
   }
 
   // Ordena os jogadores pelo overall (do maior para o menor)
-  const sortedPlayers = [...players].sort((a, b) => b.overall - a.overall);
+  const sortedPlayers = [...players].sort(
+    (a, b) => calculateOverall(b) - calculateOverall(a),
+  );
 
   return (
     <div className="max-w-4xl mx-auto p-4 md:p-6 bg-white shadow-lg rounded-lg">
@@ -63,7 +65,9 @@ export const PlayersView = () => {
 
               <div className="text-sm md:text-lg font-semibold">
                 <div>🏐 {player.name}</div>
-                <div className="text-blue-600">Overall: {player.overall}</div>
+                <div className="text-blue-600">
+                  Overall: {calculateOverall(player)}
+                </div>
               </div>
             </div>
 

@@ -50,18 +50,6 @@ export const EditPlayer = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // Recalcular o Overall ao atualizar o jogador
-    const overall = (
-      (updatedPlayer.attack ?? player.attack) * 0.2 +
-      (updatedPlayer.serve ?? player.serve) * 0.15 +
-      (updatedPlayer.set ?? player.set) * 0.15 +
-      (updatedPlayer.defense ?? player.defense) * 0.15 +
-      (updatedPlayer.positioning ?? player.positioning) * 0.1 +
-      (updatedPlayer.reception ?? player.reception) * 0.1 +
-      (updatedPlayer.consistency ?? player.consistency) * 0.1 +
-      (updatedPlayer.block ?? player.stamina) * 0.05
-    ).toFixed(2);
-
     let imageUrl = player.imageUrl || "";
 
     // ✅ Se houver uma nova imagem, faz o upload para Firebase Storage
@@ -74,7 +62,7 @@ export const EditPlayer = () => {
     // ✅ Atualiza os dados do jogador no Firestore
     updateMutation.mutate({
       id: player.id!,
-      updatedPlayer: { ...updatedPlayer, overall: Number(overall), imageUrl },
+      updatedPlayer: { ...updatedPlayer, imageUrl },
     });
 
     navigate("/"); // Redireciona para a listagem após atualização

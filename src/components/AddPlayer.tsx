@@ -1,11 +1,10 @@
-import { FormEvent, useState } from "react";
+import { ChangeEvent, FormEvent, useState } from "react";
 import { usePlayers } from "../hooks/usePlayers";
 import { Player } from "../types/player";
 import { User } from "lucide-react";
 import { playerAttributes } from "../constants.tsx";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../services/firebase.ts";
-import { calculateOverall } from "../utils.ts";
 
 export const AddPlayer = () => {
   const { addMutation } = usePlayers();
@@ -19,13 +18,12 @@ export const AddPlayer = () => {
     reception: 5,
     consistency: 5,
     block: 5,
-    overall: 5,
     imageUrl: "",
   });
   const [imageFile, setImageFile] = useState<File | null>(null);
 
   // ✅ Atualiza os valores dos inputs
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setPlayer((prev) => ({
       ...prev,
@@ -34,7 +32,7 @@ export const AddPlayer = () => {
   };
 
   // ✅ Lida com o upload da imagem e armazena temporariamente no estado
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       setImageFile(file);
@@ -50,9 +48,6 @@ export const AddPlayer = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // ✅ Calcula o Overall do jogador
-    const overall = calculateOverall(player);
-
     let imageUrl = "";
 
     // ✅ Se houver uma imagem, faz o upload para Firebase Storage
@@ -65,7 +60,6 @@ export const AddPlayer = () => {
     // ✅ Salva os dados no Firestore
     addMutation.mutate({
       ...player,
-      overall: Number(overall),
       imageUrl,
     });
 
@@ -80,7 +74,6 @@ export const AddPlayer = () => {
       reception: 5,
       consistency: 5,
       block: 5,
-      overall: 5,
       imageUrl: "",
     });
     setImageFile(null);

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { usePlayers } from "../hooks/usePlayers";
 import { generateTeams } from "../services/generateTeams.ts";
 import { Player } from "../types/player.ts";
+import { calculateOverall } from "../utils.ts";
 
 export const TeamGenerator = () => {
   const { players } = usePlayers();
@@ -144,7 +145,7 @@ export const TeamGenerator = () => {
               )}
               <span className="font-semibold">{player.name}</span>
               <span className="text-gray-500 text-sm">
-                (Overall: {player.overall})
+                (Overall: {calculateOverall(player)})
               </span>
             </label>
           ))}
@@ -206,7 +207,7 @@ export const TeamGenerator = () => {
                     )}
                     <span className="font-semibold">{player.name}</span>
                     <span className="text-gray-500 text-sm">
-                      Overall: {player.overall}
+                      Overall: {calculateOverall(player)}
                     </span>
                   </li>
                 ))}

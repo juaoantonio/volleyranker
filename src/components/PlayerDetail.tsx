@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { usePlayers } from "../hooks/usePlayers";
 import { ArrowLeft } from "lucide-react";
+import { calculateOverall } from "../utils.ts";
 
 export const PlayerDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -20,7 +21,7 @@ export const PlayerDetail = () => {
 
       <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
         {player.name} - Overall:{" "}
-        <span className="text-blue-600">{player.overall}</span>
+        <span className="text-blue-600">{calculateOverall(player)}</span>
       </h2>
 
       {/* Atributos do jogador */}

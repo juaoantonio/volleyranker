@@ -1,4 +1,5 @@
 import { Player } from "../types/player.ts";
+import { calculateOverall } from "../utils.ts";
 
 export const generateTeams = (
   players: Player[],
@@ -30,7 +31,10 @@ export const generateTeams = (
 
   // Embaralha (ordenando com ruído) os setters para variar a ordem a cada execução
   setters = setters.sort(
-    (a, b) => b.overall + randomNoise() - (a.overall + randomNoise()),
+    (a, b) =>
+      calculateOverall(b) +
+      randomNoise() -
+      (calculateOverall(a) + randomNoise()),
   );
 
   // Passo 1: Pré-atribui um setter para cada time (se disponível)
@@ -38,7 +42,7 @@ export const generateTeams = (
     if (setters.length > 0) {
       const setter = setters.shift()!;
       teams[i].players.push(setter);
-      teams[i].totalOverall += setter.overall;
+      teams[i].totalOverall += calculateOverall(setter);
     }
   }
 
@@ -46,7 +50,10 @@ export const generateTeams = (
   let remainingPlayers = [...setters, ...others];
   // Ordena os jogadores restantes usando o overall com ruído para variar a ordem
   remainingPlayers = remainingPlayers.sort(
-    (a, b) => b.overall + randomNoise() - (a.overall + randomNoise()),
+    (a, b) =>
+      calculateOverall(b) +
+      randomNoise() -
+      (calculateOverall(a) + randomNoise()),
   );
 
   // Passo 2: Distribui os jogadores restantes para balancear os totais de overall
@@ -74,7 +81,7 @@ export const generateTeams = (
     }
     if (minTeamIndex >= 0) {
       teams[minTeamIndex].players.push(player);
-      teams[minTeamIndex].totalOverall += player.overall;
+      teams[minTeamIndex].totalOverall += calculateOverall(player);
     }
   }
 

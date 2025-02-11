@@ -8,7 +8,6 @@ export interface Player {
   positioning: number;
   reception: number;
   consistency: number;
-  stamina: number;
-  overall: number;
+  block: number;
   imageUrl?: string;
 }

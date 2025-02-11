@@ -1,7 +1,6 @@
 import {
   Hand,
   HandHelping,
-  Heart,
   MapPin,
   Repeat,
   Shield,
@@ -46,8 +45,8 @@ export const playerAttributes = [
     icon: <Repeat size={20} className="text-purple-500" />,
   },
   {
-    label: "Resistência Física",
-    name: "stamina",
-    icon: <Heart size={20} className="text-pink-500" />,
+    label: "Bloqueio",
+    name: "block",
+    icon: <Shield size={20} className={"text-green-500 transform rotate-45"} />,
   },
 ];

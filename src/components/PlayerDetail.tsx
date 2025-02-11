@@ -47,7 +47,7 @@ export const PlayerDetail = () => {
           <strong>Constância:</strong> {player.consistency}
         </p>
         <p>
-          <strong>Resistência Física:</strong> {player.stamina}
+          <strong>Bloqueio</strong> {player.block}
         </p>
       </div>
     </div>

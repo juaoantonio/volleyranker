@@ -59,7 +59,7 @@ export const EditPlayer = () => {
       (updatedPlayer.positioning ?? player.positioning) * 0.1 +
       (updatedPlayer.reception ?? player.reception) * 0.1 +
       (updatedPlayer.consistency ?? player.consistency) * 0.1 +
-      (updatedPlayer.stamina ?? player.stamina) * 0.05
+      (updatedPlayer.block ?? player.stamina) * 0.05
     ).toFixed(2);
 
     let imageUrl = player.imageUrl || "";

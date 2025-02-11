@@ -5,6 +5,7 @@ import { User } from "lucide-react";
 import { playerAttributes } from "../constants.tsx";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../services/firebase.ts";
+import { calculateOverall } from "../utils.ts";
 
 export const AddPlayer = () => {
   const { addMutation } = usePlayers();
@@ -17,7 +18,7 @@ export const AddPlayer = () => {
     positioning: 5,
     reception: 5,
     consistency: 5,
-    stamina: 5,
+    block: 5,
     overall: 5,
     imageUrl: "",
   });
@@ -50,16 +51,7 @@ export const AddPlayer = () => {
     e.preventDefault();
 
     // ✅ Calcula o Overall do jogador
-    const overall = (
-      player.attack * 0.2 +
-      player.serve * 0.15 +
-      player.set * 0.15 +
-      player.defense * 0.15 +
-      player.positioning * 0.1 +
-      player.reception * 0.1 +
-      player.consistency * 0.1 +
-      player.stamina * 0.05
-    ).toFixed(2);
+    const overall = calculateOverall(player);
 
     let imageUrl = "";
 
@@ -87,7 +79,7 @@ export const AddPlayer = () => {
       positioning: 5,
       reception: 5,
       consistency: 5,
-      stamina: 5,
+      block: 5,
       overall: 5,
       imageUrl: "",
     });

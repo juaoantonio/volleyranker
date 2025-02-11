@@ -65,7 +65,7 @@ export const EditPlayer = () => {
       updatedPlayer: { ...updatedPlayer, imageUrl },
     });
 
-    navigate("/"); // Redireciona para a listagem após atualização
+    navigate(-1);
   };
 
   return (

@@ -2,6 +2,19 @@ import { Link, useParams } from "react-router-dom";
 import { usePlayers } from "../hooks/usePlayers";
 import { ArrowLeft } from "lucide-react";
 import { calculateOverall } from "../utils.ts";
+import {
+  PolarAngleAxis,
+  PolarGrid,
+  PolarRadiusAxis,
+  Radar,
+  RadarChart,
+} from "recharts";
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "./ui/Chart.tsx";
 
 export const PlayerDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,6 +25,24 @@ export const PlayerDetail = () => {
   if (!player) {
     return <p className="text-center text-red-500">Jogador não encontrado.</p>;
   }
+
+  const playerStats = [
+    { attribute: "Atq", value: player.attack },
+    { attribute: "Saq", value: player.serve },
+    { attribute: "Levant", value: player.set },
+    { attribute: "Def", value: player.defense },
+    { attribute: "Pos", value: player.positioning },
+    { attribute: "Recep", value: player.reception },
+    { attribute: "Const", value: player.consistency },
+    { attribute: "Bloq", value: player.block },
+  ];
+
+  const chartConfig = {
+    value: {
+      label: "Valor",
+      color: "hsl(var(--chart-1))",
+    },
+  } satisfies ChartConfig;
 
   return (
     <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg p-6">
@@ -24,7 +55,32 @@ export const PlayerDetail = () => {
         <span className="text-blue-600">{calculateOverall(player)}</span>
       </h2>
 
-      {/* Atributos do jogador */}
+      <ChartContainer
+        config={chartConfig}
+        className="mx-auto aspect-square max-h-[450px]"
+      >
+        <RadarChart data={playerStats}>
+          <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+          <PolarAngleAxis
+            dataKey="attribute"
+            tick={{ fontSize: 12, dy: 5 }} // Ajusta posição das labels
+          />
+          <PolarGrid />
+          <PolarRadiusAxis
+            domain={[0, 5]}
+            tickCount={6}
+            allowDataOverflow={false}
+          />
+          <Radar
+            dataKey="value"
+            stroke="hsl(var(--chart-3))"
+            fill="hsl(var(--chart-3))"
+            fillOpacity={0.6}
+            dot={{ r: 4, fillOpacity: 1 }}
+          />
+        </RadarChart>
+      </ChartContainer>
+
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4 text-gray-700">
         <p>
           <strong>Ataque:</strong> {player.attack}

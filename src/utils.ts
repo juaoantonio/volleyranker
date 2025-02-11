@@ -61,3 +61,84 @@ export function calculateOverall(player: Player): number {
 
   return Number(overall.toFixed(2));
 }
+
+export enum Position {
+  Setter = "Levantador",
+  Middle = "Central",
+  Opposite = "Oposto",
+  Wing = "Ponta",
+  Libero = "Líbero",
+}
+
+export const positionColors: Record<Position, Record<"bg" | "text", string>> = {
+  [Position.Setter]: {
+    text: "text-blue-600",
+    bg: "bg-blue-100",
+  },
+  [Position.Middle]: {
+    text: "text-green-600",
+    bg: "bg-green-100",
+  },
+  [Position.Opposite]: {
+    text: "text-red-600",
+    bg: "bg-red-100",
+  },
+  [Position.Wing]: {
+    text: "text-yellow-600",
+    bg: "bg-yellow-100",
+  },
+  [Position.Libero]: {
+    text: "text-gray-600",
+    bg: "bg-gray-100",
+  },
+};
+
+/**
+ * Atribui uma posição ao jogador com base em um cálculo avançado dos seus atributos.
+ *
+ * As posições consideradas são:
+ * - **Levantador:** Prioriza o "set", mas também valoriza o serviço, a consistência e a recepção.
+ * - **Central:** Foca no bloqueio, defesa e posicionamento.
+ * - **Oposto:** Destaque para ataque, serviço e consistência, com um pouco de defesa.
+ * - **Ponta:** Jogador versátil que combina ataque e recepção, com suporte do serviço e consistência.
+ * - **Líbero:** Especialista em recepção, com boa defesa, posicionamento e consistência.
+ */
+export function assignPosition(player: Player): Position {
+  const setterScore =
+    player.set * 0.5 +
+    player.serve * 0.15 +
+    player.consistency * 0.2 +
+    player.reception * 0.15;
+  const centralScore =
+    player.block * 0.5 + player.defense * 0.3 + player.positioning * 0.2;
+  const oppositeScore =
+    player.attack * 0.5 +
+    player.serve * 0.2 +
+    player.consistency * 0.2 +
+    player.defense * 0.1;
+  const wingScore =
+    player.attack * 0.4 +
+    player.reception * 0.4 +
+    player.serve * 0.1 +
+    player.consistency * 0.1;
+  const liberoScore =
+    player.reception * 0.4 +
+    player.defense * 0.3 +
+    player.positioning * 0.2 +
+    player.consistency * 0.1;
+
+  const positions = [
+    { name: Position.Setter, score: setterScore },
+    { name: Position.Middle, score: centralScore },
+    { name: Position.Opposite, score: oppositeScore },
+    { name: Position.Wing, score: wingScore },
+    { name: Position.Libero, score: liberoScore },
+  ];
+
+  // Seleciona a posição com o maior score
+  const bestPosition = positions.reduce((prev, curr) =>
+    curr.score > prev.score ? curr : prev,
+  );
+
+  return bestPosition.name;
+}

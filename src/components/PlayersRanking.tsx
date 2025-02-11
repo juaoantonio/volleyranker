@@ -2,7 +2,12 @@ import { useState } from "react";
 import { usePlayers } from "../hooks/usePlayers";
 import { Link } from "react-router-dom";
 import { Crown, Eye, Search, User } from "lucide-react";
-import { calculateOverall, cn } from "../utils.ts";
+import {
+  assignPosition,
+  calculateOverall,
+  cn,
+  positionColors,
+} from "../utils.ts";
 
 export function PlayersRanking() {
   const { players, isLoading } = usePlayers();
@@ -82,25 +87,37 @@ export function PlayersRanking() {
                 {index + 1}
               </span>
 
-              <div className="flex items-center gap-4 w-full md:w-auto">
-                {player.imageUrl ? (
-                  <img
-                    src={player.imageUrl}
-                    alt={player.name}
-                    className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border border-gray-300 shadow-sm"
-                  />
-                ) : (
-                  <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gray-200 flex items-center justify-center">
-                    <User size={24} className="text-gray-500" />
-                  </div>
-                )}
+              <div className={"flex justify-between w-full items-center"}>
+                <div className="flex items-center gap-4">
+                  {player.imageUrl ? (
+                    <img
+                      src={player.imageUrl}
+                      alt={player.name}
+                      className="w-16 h-16 rounded-full object-cover border border-gray-300 shadow-sm"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center">
+                      <User size={32} className="text-gray-500" />
+                    </div>
+                  )}
 
-                <div className="text-sm md:text-lg font-semibold">
-                  <div>🏐 {player.name}</div>
-                  <div className="text-blue-600">
-                    Overall: {calculateOverall(player)}
+                  <div className="text-lg font-semibold">
+                    <span>🏐 {player.name}</span>
+                    <span className="block text-blue-600">
+                      Overall: {calculateOverall(player)}
+                    </span>
                   </div>
                 </div>
+
+                <span
+                  className={cn(
+                    "text-center mx-auto py-1 px-3 rounded-full block w-min",
+                    positionColors[assignPosition(player)].bg,
+                    positionColors[assignPosition(player)].text,
+                  )}
+                >
+                  {assignPosition(player)}
+                </span>
               </div>
 
               <div className="flex justify-center md:justify-end gap-3 mt-3 md:mt-0 w-full md:w-auto">

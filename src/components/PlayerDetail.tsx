@@ -1,7 +1,12 @@
 import { Link, useParams } from "react-router-dom";
 import { usePlayers } from "../hooks/usePlayers";
 import { ArrowLeft } from "lucide-react";
-import { calculateOverall } from "../utils.ts";
+import {
+  assignPosition,
+  calculateOverall,
+  cn,
+  positionColors,
+} from "../utils.ts";
 import {
   PolarAngleAxis,
   PolarGrid,
@@ -36,7 +41,7 @@ export const PlayerDetail = () => {
     { attribute: "Const", value: player.consistency },
     { attribute: "Bloq", value: player.block },
   ];
-
+  const playerPosition = assignPosition(player);
   const chartConfig = {
     value: {
       label: "Valor",
@@ -54,6 +59,18 @@ export const PlayerDetail = () => {
         {player.name} - Overall:{" "}
         <span className="text-blue-600">{calculateOverall(player)}</span>
       </h2>
+
+      <div className={"w-full"}>
+        <span
+          className={cn(
+            "text-center mx-auto py-1 px-3 rounded-full mb-4 block w-min",
+            positionColors[playerPosition].bg,
+            positionColors[playerPosition].text,
+          )}
+        >
+          {playerPosition}
+        </span>
+      </div>
 
       <ChartContainer
         config={chartConfig}

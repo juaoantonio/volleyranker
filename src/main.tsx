@@ -17,6 +17,7 @@ import { PlayersRanking } from "./components/PlayersRanking.tsx";
 import { TeamGenerator } from "./components/TeamGenerator.tsx";
 import { GameDetail } from "./components/GameDetail.tsx";
 import { GameList } from "./components/GameList.tsx";
+import { EvaluationPage } from "./components/EvaluationPage.tsx";
 
 export const queryClient = new QueryClient();
 
@@ -34,6 +35,8 @@ createRoot(document.getElementById("root")!).render(
                             path="/admin/player/:id"
                             element={<PlayerDetail />}
                         />
+                        <Route path="/games/:id" element={<GameDetail />} />
+                        <Route path="/games" element={<GameList />} />
                     </Route>
 
                     {/* Rotas protegidas */}
@@ -44,8 +47,11 @@ createRoot(document.getElementById("root")!).render(
                             path="/admin/edit/:id"
                             element={<EditPlayer />}
                         />
-                        <Route path="/games/:id" element={<GameDetail />} />
-                        <Route path="/games" element={<GameList />} />
+
+                        <Route
+                            path="/games/:id/evaluation"
+                            element={<EvaluationPage />}
+                        />
                     </Route>
                 </Routes>
 

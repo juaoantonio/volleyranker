@@ -12,3 +12,32 @@ export interface Game {
     gameFee?: number;
     payments?: Payment[];
 }
+
+export interface Evaluation {
+    id?: string;
+    gameId: string;
+    evaluatorId: string; // jogador que está avaliando
+    evaluatedId: string; // jogador avaliado
+    ratings: {
+        attack: number;
+        serve: number;
+        set: number;
+        defense: number;
+        positioning: number;
+        reception: number;
+        consistency: number;
+        block: number;
+    };
+    createdAt: string;
+}
+
+export interface Adjustments {
+    attack: number;
+    serve: number;
+    set: number;
+    defense: number;
+    positioning: number;
+    reception: number;
+    consistency: number;
+    block: number;
+}

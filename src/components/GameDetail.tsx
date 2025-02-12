@@ -3,13 +3,19 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { gameService } from "../services/gameService.ts";
-import { Game } from "../types/game.ts";
+import { Evaluation, Game } from "../types/game.ts";
 import { TeamCard } from "./TeamCard.tsx";
 import { useTeamStore } from "../store/useTeamStore.ts";
+import { evaluationService } from "../services/evaluationService.ts";
+import { updatePlayer } from "../services/firebase.ts";
+import { Player } from "../types/player.ts";
+import { calculateRelativeAdjustments } from "../utils.ts";
+import { useAuth } from "../hooks/useAuth.ts";
 
 export const GameDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
+    const { user } = useAuth();
     const { setTeams, teams } = useTeamStore();
     const [gameData, setGameData] = useState<Game | null>(null);
 
@@ -50,7 +56,6 @@ export const GameDetail = () => {
     });
 
     useEffect(() => {
-        console.log(teams);
         if (!teams) return;
         setGameData((prev) => (prev ? { ...prev, teams: teams } : null));
     }, [teams, setGameData]);
@@ -81,6 +86,74 @@ export const GameDetail = () => {
         );
     };
 
+    const handleApplyEvaluations = async () => {
+        if (!gameData) return;
+        try {
+            // Busca todas as avaliações do jogo
+            const evaluations = await evaluationService.getEvaluationsByGameId(
+                gameData.id!,
+            );
+
+            // Agrupa as avaliações por jogador avaliado
+            const evaluationsByPlayer = evaluations.reduce(
+                (acc, evaluation) => {
+                    if (!acc[evaluation.evaluatedId]) {
+                        acc[evaluation.evaluatedId] = [];
+                    }
+                    acc[evaluation.evaluatedId].push(evaluation);
+                    return acc;
+                },
+                {} as Record<string, Evaluation[]>,
+            );
+
+            // Processa as avaliações para cada jogador
+            for (const playerId in evaluationsByPlayer) {
+                const evals = evaluationsByPlayer[playerId];
+
+                // Busca o jogador correspondente dentro dos dados do jogo
+                const player = gameData.players?.find((p) => p.id === playerId);
+                if (!player) continue;
+
+                // Calcula os ajustes com base no valor atual do jogador
+                const adjustments = calculateRelativeAdjustments(
+                    evals,
+                    {
+                        attack: player.attack,
+                        serve: player.serve,
+                        set: player.set,
+                        defense: player.defense,
+                        positioning: player.positioning,
+                        reception: player.reception,
+                        consistency: player.consistency,
+                        block: player.block,
+                    },
+                    0.1, // scalingFactor – ajuste conforme necessário
+                );
+
+                const updatedPlayer: Player = {
+                    ...player,
+                    attack: player.attack + adjustments.attack,
+                    serve: player.serve + adjustments.serve,
+                    set: player.set + adjustments.set,
+                    defense: player.defense + adjustments.defense,
+                    positioning: player.positioning + adjustments.positioning,
+                    reception: player.reception + adjustments.reception,
+                    consistency: player.consistency + adjustments.consistency,
+                    block: player.block + adjustments.block,
+                };
+
+                // Atualiza o jogador no Firestore (supondo que a função updatePlayer esteja implementada)
+                await updatePlayer(updatedPlayer.id!, updatedPlayer);
+            }
+
+            toast.success("Avaliações aplicadas com sucesso!");
+            await evaluationService.removeAllEvaluationsByGameId(gameData.id!);
+        } catch (error) {
+            toast.error("Erro ao aplicar avaliações");
+            console.error(error);
+        }
+    };
+
     if (isPending) return <p className="text-center">Carregando...</p>;
 
     if (isError)
@@ -90,14 +163,18 @@ export const GameDetail = () => {
     const paidCount = gameData?.payments?.filter((p) => p.hasPaid).length || 0;
     const totalPlayers = gameData?.players?.length || 0;
 
-    console.log(gameData);
-
     return (
         <div className="max-w-5xl mx-auto p-6">
             <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
                 <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
-                    ⚡ Editar Detalhes do Jogo
+                    {user ? "⚡ Editar Detalhes do Jogo" : "Detalhes do Jogo"}
                 </h2>
+
+                {!user && (
+                    <p className="text-center text-sm text-gray-600 mb-4">
+                        Você está visualizando apenas os detalhes do jogo.
+                    </p>
+                )}
 
                 {/* Contador de pagamentos */}
                 <div className="text-lg font-semibold text-center text-green-600 mb-4">
@@ -125,6 +202,7 @@ export const GameDetail = () => {
                                     <label className="flex items-center gap-2">
                                         <input
                                             type="checkbox"
+                                            disabled={!user}
                                             checked={payment?.hasPaid || false}
                                             onChange={() =>
                                                 handleTogglePayment(player.id!)
@@ -147,23 +225,23 @@ export const GameDetail = () => {
                         </label>
                         <input
                             type="date"
+                            disabled={!user}
                             value={
                                 gameData?.date
                                     ? new Date(gameData.date)
                                           .toISOString()
-                                          .split("T")[0] // Exibe no formato YYYY-MM-DD
+                                          .split("T")[0]
                                     : ""
                             }
                             onChange={(e) => {
                                 const selectedDate = new Date(
                                     e.target.value + "T00:00:00-03:00",
-                                ); // Garante UTC-3
+                                );
                                 const utcDate = new Date(
                                     selectedDate.getTime(),
-                                ).toISOString(); // Converte para UTC
-
+                                ).toISOString();
                                 setGameData({
-                                    ...gameData,
+                                    ...gameData!,
                                     date: utcDate,
                                 });
                             }}
@@ -177,10 +255,11 @@ export const GameDetail = () => {
                         </label>
                         <input
                             type="time"
+                            disabled={!user}
                             value={gameData?.startTime ?? ""}
                             onChange={(e) =>
                                 setGameData({
-                                    ...gameData,
+                                    ...gameData!,
                                     startTime: e.target.value,
                                 })
                             }
@@ -194,10 +273,11 @@ export const GameDetail = () => {
                         </label>
                         <input
                             type="time"
+                            disabled={!user}
                             value={gameData?.endTime ?? ""}
                             onChange={(e) =>
                                 setGameData({
-                                    ...gameData,
+                                    ...gameData!,
                                     endTime: e.target.value,
                                 })
                             }
@@ -213,10 +293,11 @@ export const GameDetail = () => {
                     </label>
                     <input
                         type="number"
+                        disabled={!user}
                         value={gameData?.gameFee}
                         onChange={(e) =>
                             setGameData({
-                                ...gameData,
+                                ...gameData!,
                                 gameFee: Number(e.target.value),
                             })
                         }
@@ -237,28 +318,44 @@ export const GameDetail = () => {
                     </div>
                 </div>
 
-                {/* Botões de ação */}
-                <div className="flex justify-between mt-6">
-                    <button
-                        onClick={handleDeleteGame}
-                        className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300"
-                        disabled={deleteMutation.isPending}
-                    >
-                        {deleteMutation.isPending
-                            ? "Removendo..."
-                            : "Excluir Jogo"}
-                    </button>
+                {/* Botões de ação (renderizados somente se o usuário estiver autenticado) */}
+                {user && (
+                    <div className="flex flex-col md:flex-row md:justify-between mt-6 gap-4">
+                        <button
+                            onClick={() => navigate(`/games/${id}/evaluation`)}
+                            className="w-full md:w-auto px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition duration-300"
+                        >
+                            Iniciar Avaliação
+                        </button>
 
-                    <button
-                        onClick={handleUpdateGame}
-                        className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-300"
-                        disabled={updateMutation.isPending}
-                    >
-                        {updateMutation.isPending
-                            ? "Salvando..."
-                            : "Salvar Alterações"}
-                    </button>
-                </div>
+                        <button
+                            onClick={handleDeleteGame}
+                            disabled={deleteMutation.isPending}
+                            className="w-full md:w-auto px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300"
+                        >
+                            {deleteMutation.isPending
+                                ? "Removendo..."
+                                : "Excluir Jogo"}
+                        </button>
+
+                        <button
+                            onClick={handleApplyEvaluations}
+                            className="w-full md:w-auto px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition duration-300"
+                        >
+                            Aplicar Avaliações
+                        </button>
+
+                        <button
+                            onClick={handleUpdateGame}
+                            disabled={updateMutation.isPending}
+                            className="w-full md:w-auto px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-300"
+                        >
+                            {updateMutation.isPending
+                                ? "Salvando..."
+                                : "Salvar Alterações"}
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

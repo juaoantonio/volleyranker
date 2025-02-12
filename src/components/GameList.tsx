@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import { gameService } from "../services/gameService.ts";
 import { Eye, Trash2 } from "lucide-react";
 import { queryClient } from "../main.tsx";
+import { useAuth } from "../hooks/useAuth.ts";
 
 export const GameList = () => {
     // Busca todos os jogos do Firestore
@@ -15,6 +16,7 @@ export const GameList = () => {
         queryKey: ["games"],
         queryFn: gameService.getAllGames,
     });
+    const { user } = useAuth();
 
     // Mutação para deletar um jogo do Firestore
     const deleteMutation = useMutation({
@@ -96,16 +98,18 @@ export const GameList = () => {
                                         Ver Detalhes
                                     </Link>
 
-                                    <button
-                                        onClick={() =>
-                                            handleDeleteGame(game.id!)
-                                        }
-                                        className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
-                                        disabled={deleteMutation.isPending}
-                                    >
-                                        <Trash2 className="w-5 h-5" />
-                                        Excluir
-                                    </button>
+                                    {user && (
+                                        <button
+                                            onClick={() =>
+                                                handleDeleteGame(game.id!)
+                                            }
+                                            className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+                                            disabled={deleteMutation.isPending}
+                                        >
+                                            <Trash2 className="w-5 h-5" />
+                                            Excluir
+                                        </button>
+                                    )}
                                 </div>
                             </div>
                         );

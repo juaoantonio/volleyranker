@@ -2,6 +2,7 @@ import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Player } from "./types/player.ts";
 import { Team } from "./types/team.ts";
+import { Adjustments, Evaluation } from "./types/game.ts";
 
 export function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -283,4 +284,57 @@ export function calculateTeamStatsForRadar(team: Team): TeamStats {
         consistency: Number(aggregatedStats.consistency.toFixed(2)),
         overall: Number(overallScore.toFixed(2)),
     };
+}
+
+/**
+ * Calcula os ajustes para as estatísticas de um jogador com base nas avaliações e
+ * no valor atual de cada estatística do jogador.
+ *
+ * @param evaluations - Array de avaliações para o jogador.
+ * @param currentStats - Objeto contendo os valores atuais das estatísticas do jogador.
+ * @param scalingFactor - Fator de escala para modular o impacto do ajuste (padrão: 1).
+ * @returns Objeto com os ajustes para cada estatística.
+ */
+export function calculateRelativeAdjustments(
+    evaluations: Evaluation[],
+    currentStats: Pick<Adjustments, keyof Adjustments>,
+    scalingFactor: number = 1,
+): Adjustments {
+    // Lista de estatísticas a serem avaliadas
+    const stats: (keyof Adjustments)[] = [
+        "attack",
+        "serve",
+        "set",
+        "defense",
+        "positioning",
+        "reception",
+        "consistency",
+        "block",
+    ];
+
+    const adjustments = {} as Adjustments;
+
+    stats.forEach((stat) => {
+        // Soma os ratings para a estatística em questão
+        const total = evaluations.reduce(
+            (sum, evaluation) => sum + evaluation.ratings[stat],
+            0,
+        );
+        // Calcula a média dos ratings
+        const avg = total / evaluations.length;
+
+        // Cálculo baseado no valor atual do jogador:
+        // A diferença entre a média e o valor atual é multiplicada por um fator de escala.
+        let adjustment = (avg - currentStats[stat]) * scalingFactor;
+        adjustment = parseFloat(adjustment.toFixed(2));
+
+        // Opcional: se o ajuste for muito pequeno, definimos como zero para evitar alterações insignificantes.
+        if (Math.abs(adjustment) < 0.1) {
+            adjustment = 0;
+        }
+
+        adjustments[stat] = adjustment;
+    });
+
+    return adjustments;
 }

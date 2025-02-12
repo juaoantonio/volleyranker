@@ -67,7 +67,6 @@ export const TeamGenerator = () => {
     // Mutação para salvar jogo no Firestore
     const mutation = useMutation({
         mutationFn: async (game: Game) => {
-            console.log(game);
             return await gameService.createGame(game);
         },
         onSuccess: (docRef) => {

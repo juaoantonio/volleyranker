@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { Player } from "./types/player.ts";
+import { Team } from "./types/team.ts";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -169,8 +170,8 @@ export interface TeamStats {
   overall: number;
 }
 
-export function calculateTeamStatsForRadar(team: Player[]): TeamStats {
-  if (team.length === 0) {
+export function calculateTeamStatsForRadar(team: Team): TeamStats {
+  if (team.players.length === 0) {
     return {
       attack: 0,
       serve: 0,
@@ -186,14 +187,24 @@ export function calculateTeamStatsForRadar(team: Player[]): TeamStats {
 
   // 1. Cálculo das estatísticas agregadas (média de cada atributo)
   const aggregatedStats = {
-    attack: team.reduce((sum, p) => sum + p.attack, 0) / team.length,
-    serve: team.reduce((sum, p) => sum + p.serve, 0) / team.length,
-    set: team.reduce((sum, p) => sum + p.set, 0) / team.length,
-    defense: team.reduce((sum, p) => sum + p.defense, 0) / team.length,
-    block: team.reduce((sum, p) => sum + p.block, 0) / team.length,
-    positioning: team.reduce((sum, p) => sum + p.positioning, 0) / team.length,
-    reception: team.reduce((sum, p) => sum + p.reception, 0) / team.length,
-    consistency: team.reduce((sum, p) => sum + p.consistency, 0) / team.length,
+    attack:
+      team.players.reduce((sum, p) => sum + p.attack, 0) / team.players.length,
+    serve:
+      team.players.reduce((sum, p) => sum + p.serve, 0) / team.players.length,
+    set: team.players.reduce((sum, p) => sum + p.set, 0) / team.players.length,
+    defense:
+      team.players.reduce((sum, p) => sum + p.defense, 0) / team.players.length,
+    block:
+      team.players.reduce((sum, p) => sum + p.block, 0) / team.players.length,
+    positioning:
+      team.players.reduce((sum, p) => sum + p.positioning, 0) /
+      team.players.length,
+    reception:
+      team.players.reduce((sum, p) => sum + p.reception, 0) /
+      team.players.length,
+    consistency:
+      team.players.reduce((sum, p) => sum + p.consistency, 0) /
+      team.players.length,
   };
 
   // 2. Cálculo da nota base usando pesos definidos (os mesmos utilizados para jogadores)
@@ -235,8 +246,8 @@ export function calculateTeamStatsForRadar(team: Player[]): TeamStats {
   const stdevs = attributes.map((attr) => {
     const mean = aggregatedStats[attr];
     const variance =
-      team.reduce((acc, p) => acc + Math.pow(p[attr] - mean, 2), 0) /
-      team.length;
+      team.players.reduce((acc, p) => acc + Math.pow(p[attr] - mean, 2), 0) /
+      team.players.length;
     return Math.sqrt(variance);
   });
 

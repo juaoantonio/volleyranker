@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   addPlayer,
   getPlayers,
@@ -7,10 +7,9 @@ import {
 } from "../services/firebase";
 import { Player } from "../types/player";
 import { toast } from "react-toastify";
+import { queryClient } from "../main.tsx";
 
 export const usePlayers = () => {
-  const queryClient = useQueryClient();
-
   // ✅ Buscar jogadores (GET)
   const {
     data: players,

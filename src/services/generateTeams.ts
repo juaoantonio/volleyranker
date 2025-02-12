@@ -1,11 +1,12 @@
-import { Player } from "../types/player.ts";
-import { calculateOverall } from "../utils.ts";
+import { Player } from "../types/player";
+import { Team } from "../types/team";
+import { calculateOverall } from "../utils";
 
 export const generateTeams = (
   players: Player[],
   teamSize: number,
   totalPlayers: number,
-) => {
+): Team[] | { error: string } => {
   // Verifica se há jogadores suficientes
   if (players.length < totalPlayers) {
     return {
@@ -79,12 +80,15 @@ export const generateTeams = (
         minTeamIndex = i;
       }
     }
+
     if (minTeamIndex >= 0) {
       teams[minTeamIndex].players.push(player);
       teams[minTeamIndex].totalOverall += calculateOverall(player);
     }
   }
 
-  // Retorna apenas a lista de jogadores de cada time (omitindo a soma de overall)
-  return teams.map((team) => team.players);
+  // Retorna o array de `Team` contendo apenas a lista de jogadores
+  return teams.map((team) => ({
+    players: team.players,
+  }));
 };

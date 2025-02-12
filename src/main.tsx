@@ -15,6 +15,8 @@ import { EditPlayer } from "./components/EditPlayer.tsx";
 import { PlayerDetail } from "./components/PlayerDetail.tsx";
 import { PlayersRanking } from "./components/PlayersRanking.tsx";
 import { TeamGenerator } from "./components/TeamGenerator.tsx";
+import { GameDetail } from "./components/GameDetail.tsx";
+import { GameList } from "./components/GameList.tsx";
 
 export const queryClient = new QueryClient();
 
@@ -36,6 +38,8 @@ createRoot(document.getElementById("root")!).render(
             <Route path="/admin/" element={<Players />} />
             <Route path="/admin/add" element={<AddPlayer />} />
             <Route path="/admin/edit/:id" element={<EditPlayer />} />
+            <Route path="/games/:id" element={<GameDetail />} />
+            <Route path="/games" element={<GameList />} />
           </Route>
         </Routes>
 

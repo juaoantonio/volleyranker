@@ -48,6 +48,13 @@ export const Navbar = () => {
               <Crown size={20} />{" "}
               <span className="hidden sm:inline">Ranking Geral</span>
             </Link>
+            <Link
+              to="/games"
+              className="text-white flex items-center gap-2 hover:text-yellow-300 transition duration-300"
+            >
+              <Volleyball size={20} />{" "}
+              <span className="hidden sm:inline">Jogos</span>
+            </Link>
 
             <Link
               to="/team"
@@ -118,6 +125,15 @@ export const Navbar = () => {
               onClick={toggleMenu}
             >
               <Crown size={20} /> Ranking Geral
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/games"
+              className="flex items-center gap-2 text-gray-700 hover:text-blue-600 transition"
+              onClick={toggleMenu}
+            >
+              <Volleyball size={20} /> Jogos
             </Link>
           </li>
 

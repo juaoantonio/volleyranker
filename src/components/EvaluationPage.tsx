@@ -16,6 +16,7 @@ const labelsLiteral = {
     consistency: "Constância",
     block: "Bloqueio",
 };
+
 export const EvaluationPage = () => {
     const { id: gameId } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -44,6 +45,19 @@ export const EvaluationPage = () => {
         },
     });
 
+    // Busca as avaliações já realizadas pelo avaliador atual para este jogo.
+    // Essa query é ativada somente quando evaluatorId e gameId estiverem definidos.
+    const { data: evaluationsByEvaluator } = useQuery<Evaluation[]>({
+        queryKey: ["evaluations", gameId, evaluatorId],
+        enabled: !!gameId && !!evaluatorId,
+        queryFn: async () => {
+            const evaluations = await evaluationService.getEvaluationsByGameId(
+                gameId!,
+            );
+            return evaluations.filter((ev) => ev.evaluatorId === evaluatorId);
+        },
+    });
+
     // Mutação para criar a avaliação
     const createEvaluationMutation = useMutation({
         mutationFn: async (evaluation: Evaluation) => {
@@ -59,7 +73,7 @@ export const EvaluationPage = () => {
     if (isLoading) return <p>Carregando...</p>;
     if (isError || !gameData) return <p>Erro ao carregar o jogo</p>;
 
-    // Lista de jogadores do jogo para o seletor de “eu sou”
+    // Lista de jogadores do jogo para o seletor "Eu sou"
     const players = gameData.players || [];
 
     // Ao selecionar o avaliador, filtra os companheiros (mesmo time)
@@ -78,6 +92,16 @@ export const EvaluationPage = () => {
             toast.error("Selecione o avaliador e o jogador a ser avaliado.");
             return;
         }
+
+        // Verifica se o avaliador já avaliou esse companheiro
+        const alreadyEvaluated = evaluationsByEvaluator?.some(
+            (ev) => ev.evaluatedId === teammateId,
+        );
+        if (alreadyEvaluated) {
+            toast.error("Você já avaliou esse jogador.");
+            return;
+        }
+
         const evaluation: Evaluation = {
             gameId,
             evaluatorId,
@@ -100,7 +124,11 @@ export const EvaluationPage = () => {
                     </label>
                     <select
                         value={evaluatorId}
-                        onChange={(e) => setEvaluatorId(e.target.value)}
+                        onChange={(e) => {
+                            setEvaluatorId(e.target.value);
+                            // Reseta a seleção do companheiro quando o avaliador mudar
+                            setTeammateId("");
+                        }}
                         className="border p-2 rounded-md w-full"
                     >
                         <option value="">Selecione...</option>
@@ -124,11 +152,22 @@ export const EvaluationPage = () => {
                             className="border p-2 rounded-md w-full"
                         >
                             <option value="">Selecione...</option>
-                            {teammates().map((player) => (
-                                <option key={player.id} value={player.id}>
-                                    {player.name}
-                                </option>
-                            ))}
+                            {teammates().map((player) => {
+                                const alreadyEvaluated =
+                                    evaluationsByEvaluator?.some(
+                                        (ev) => ev.evaluatedId === player.id,
+                                    );
+                                return (
+                                    <option
+                                        key={player.id}
+                                        value={player.id}
+                                        disabled={alreadyEvaluated}
+                                    >
+                                        {player.name}{" "}
+                                        {alreadyEvaluated ? "(Avaliado)" : ""}
+                                    </option>
+                                );
+                            })}
                         </select>
                     </div>
                 )}
@@ -148,10 +187,8 @@ export const EvaluationPage = () => {
                                         ]
                                     }
                                 </label>
-
                                 <input
                                     type="number"
-                                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                     value={(ratings as any)[stat]}
                                     onChange={(e) =>
                                         setRatings((prev) => ({

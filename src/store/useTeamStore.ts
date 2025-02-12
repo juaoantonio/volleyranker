@@ -4,78 +4,82 @@ import { generateTeams } from "../services/generateTeams";
 import { Player } from "../types/player";
 
 interface TeamState {
-  teams: Team[] | null;
-  generateTeams: (selectedPlayers: Player[], teamSize: number) => void;
-  swapPlayers: (playerOut: Player, playerIn: Player) => void;
-  resetTeams: () => void;
+    teams: Team[] | null;
+    setTeams: (teams: Team[] | null | undefined) => void;
+    generateTeams: (selectedPlayers: Player[], teamSize: number) => void;
+    swapPlayers: (playerOut: Player, playerIn: Player) => void;
+    resetTeams: () => void;
 }
 
 export const useTeamStore = create<TeamState>((set) => ({
-  teams: null,
+    teams: null,
 
-  generateTeams: (selectedPlayers, teamSize) => {
-    if (selectedPlayers.length < teamSize) {
-      set({ teams: null });
-      return;
-    }
+    setTeams: (teams: Team[] | null | undefined) => set({ teams }),
 
-    const result = generateTeams(
-      selectedPlayers,
-      teamSize,
-      selectedPlayers.length,
-    );
+    generateTeams: (selectedPlayers, teamSize) => {
+        if (selectedPlayers.length < teamSize) {
+            set({ teams: null });
+            return;
+        }
 
-    if ("error" in result) {
-      console.error(result.error);
-      set({ teams: null });
-    } else {
-      set({ teams: result });
-    }
-  },
+        const result = generateTeams(
+            selectedPlayers,
+            teamSize,
+            selectedPlayers.length,
+        );
 
-  swapPlayers: (playerOut, playerIn) => {
-    set((state) => {
-      if (!state.teams) return {};
+        if ("error" in result) {
+            console.error(result.error);
+            set({ teams: null });
+        } else {
+            set({ teams: result });
+        }
+    },
 
-      // Cria uma cópia dos times para evitar mutação direta no estado
-      const updatedTeams = state.teams.map((team) => ({
-        ...team,
-        players: [...team.players],
-      }));
+    swapPlayers: (playerOut, playerIn) => {
+        set((state) => {
+            if (!state.teams) return {};
 
-      let teamOutIndex = -1;
-      let teamInIndex = -1;
+            // Cria uma cópia dos times para evitar mutação direta no estado
+            const updatedTeams = state.teams.map((team) => ({
+                ...team,
+                players: [...team.players],
+            }));
 
-      // Encontra os times dos jogadores envolvidos
-      updatedTeams.forEach((team, index) => {
-        if (team.players.some((p) => p.id === playerOut.id))
-          teamOutIndex = index;
-        if (team.players.some((p) => p.id === playerIn.id)) teamInIndex = index;
-      });
+            let teamOutIndex = -1;
+            let teamInIndex = -1;
 
-      if (
-        teamOutIndex !== -1 &&
-        teamInIndex !== -1 &&
-        teamOutIndex !== teamInIndex
-      ) {
-        // Remove os jogadores de seus times
-        updatedTeams[teamOutIndex].players = updatedTeams[
-          teamOutIndex
-        ].players.filter((p) => p.id !== playerOut.id);
-        updatedTeams[teamInIndex].players = updatedTeams[
-          teamInIndex
-        ].players.filter((p) => p.id !== playerIn.id);
+            // Encontra os times dos jogadores envolvidos
+            updatedTeams.forEach((team, index) => {
+                if (team.players.some((p) => p.id === playerOut.id))
+                    teamOutIndex = index;
+                if (team.players.some((p) => p.id === playerIn.id))
+                    teamInIndex = index;
+            });
 
-        // Adiciona os jogadores trocados
-        updatedTeams[teamOutIndex].players.push(playerIn);
-        updatedTeams[teamInIndex].players.push(playerOut);
+            if (
+                teamOutIndex !== -1 &&
+                teamInIndex !== -1 &&
+                teamOutIndex !== teamInIndex
+            ) {
+                // Remove os jogadores de seus times
+                updatedTeams[teamOutIndex].players = updatedTeams[
+                    teamOutIndex
+                ].players.filter((p) => p.id !== playerOut.id);
+                updatedTeams[teamInIndex].players = updatedTeams[
+                    teamInIndex
+                ].players.filter((p) => p.id !== playerIn.id);
 
-        return { teams: updatedTeams };
-      }
+                // Adiciona os jogadores trocados
+                updatedTeams[teamOutIndex].players.push(playerIn);
+                updatedTeams[teamInIndex].players.push(playerOut);
 
-      return {};
-    });
-  },
+                return { teams: updatedTeams };
+            }
 
-  resetTeams: () => set({ teams: null }),
+            return {};
+        });
+    },
+
+    resetTeams: () => set({ teams: null }),
 }));

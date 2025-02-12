@@ -21,30 +21,36 @@ import { GameList } from "./components/GameList.tsx";
 export const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <BrowserRouter>
-      <QueryClientProvider client={queryClient}>
-        <Routes>
-          {/* Rotas públicas */}
-          <Route element={<PublicRoute />}>
-            <Route path="/login" element={<Login />} />
-            <Route path="/" element={<PlayersRanking />} />
-            <Route path="/team" element={<TeamGenerator />} />
-            <Route path="/admin/player/:id" element={<PlayerDetail />} />
-          </Route>
+    <StrictMode>
+        <BrowserRouter>
+            <QueryClientProvider client={queryClient}>
+                <Routes>
+                    {/* Rotas públicas */}
+                    <Route element={<PublicRoute />}>
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/" element={<PlayersRanking />} />
+                        <Route path="/team" element={<TeamGenerator />} />
+                        <Route
+                            path="/admin/player/:id"
+                            element={<PlayerDetail />}
+                        />
+                    </Route>
 
-          {/* Rotas protegidas */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/admin/" element={<Players />} />
-            <Route path="/admin/add" element={<AddPlayer />} />
-            <Route path="/admin/edit/:id" element={<EditPlayer />} />
-            <Route path="/games/:id" element={<GameDetail />} />
-            <Route path="/games" element={<GameList />} />
-          </Route>
-        </Routes>
+                    {/* Rotas protegidas */}
+                    <Route element={<ProtectedRoute />}>
+                        <Route path="/admin/" element={<Players />} />
+                        <Route path="/admin/add" element={<AddPlayer />} />
+                        <Route
+                            path="/admin/edit/:id"
+                            element={<EditPlayer />}
+                        />
+                        <Route path="/games/:id" element={<GameDetail />} />
+                        <Route path="/games" element={<GameList />} />
+                    </Route>
+                </Routes>
 
-        <ToastContainer />
-      </QueryClientProvider>
-    </BrowserRouter>
-  </StrictMode>,
+                <ToastContainer />
+            </QueryClientProvider>
+        </BrowserRouter>
+    </StrictMode>,
 );

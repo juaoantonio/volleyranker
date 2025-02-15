@@ -27,7 +27,12 @@ createRoot(document.getElementById("root")!).render(
             <QueryClientProvider client={queryClient}>
                 <Routes>
                     {/* Rotas públicas */}
-                    <Route element={<PublicRoute />}>
+             <Route
+                            path="/games/:id/evaluation"
+                            element={<EvaluationPage />}
+                        />
+                    </Route>      
+ <Route element={<PublicRoute />}>
                         <Route path="/login" element={<Login />} />
                         <Route path="/" element={<PlayersRanking />} />
                         <Route path="/team" element={<TeamGenerator />} />
@@ -48,11 +53,7 @@ createRoot(document.getElementById("root")!).render(
                             element={<EditPlayer />}
                         />
 
-                        <Route
-                            path="/games/:id/evaluation"
-                            element={<EvaluationPage />}
-                        />
-                    </Route>
+                        
                 </Routes>
 
                 <ToastContainer />

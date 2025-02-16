@@ -63,27 +63,33 @@ export const EvaluationsList = () => {
 
     const players = gameData.players;
 
-    // Jogadores que já completaram as avaliações
+    // Lista de IDs dos jogadores que concluíram suas avaliações corretamente
     const playersWhoEvaluated = new Set(
-        evaluations?.map((evalItem) => evalItem.evaluatorId),
+        gameData.teams?.flatMap(
+            (team) =>
+                team.players
+                    .filter((player) => {
+                        // Lista dos IDs dos companheiros de time (excluindo o próprio jogador)
+                        const teammates = team.players
+                            .filter((p) => p.id !== player.id)
+                            .map((p) => p.id);
+
+                        // Verifica se o jogador avaliou todos os seus companheiros de equipe
+                        return teammates.every((teammateId) =>
+                            evaluations?.some(
+                                (evalItem) =>
+                                    evalItem.evaluatorId === player.id &&
+                                    evalItem.evaluatedId === teammateId,
+                            ),
+                        );
+                    })
+                    .map((player) => player.id), // 🔹 Armazena apenas os IDs no Set
+        ),
     );
 
-    // Jogadores que ainda precisam avaliar seus companheiros
+    // Lista de jogadores que ainda precisam concluir suas avaliações
     const playersPendingEvaluations = gameData.teams?.flatMap((team) =>
-        team.players.filter(
-            (player) =>
-                !evaluations?.some(
-                    (evalItem) =>
-                        evalItem.evaluatorId === player.id &&
-                        team.players.every((p) =>
-                            evaluations.some(
-                                (e) =>
-                                    e.evaluatorId === player.id &&
-                                    e.evaluatedId === p.id,
-                            ),
-                        ),
-                ),
-        ),
+        team.players.filter((player) => !playersWhoEvaluated.has(player.id)),
     );
 
     // Filtro avançado para avaliações

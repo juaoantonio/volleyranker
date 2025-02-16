@@ -50,7 +50,7 @@ createRoot(document.getElementById("root")!).render(
                     <Route element={<ProtectedRoute />}>
                         <Route path="/admin/" element={<Players />} />
                         <Route
-                            path="/admin/:id/evaluations/"
+                            path="/games/:id/evaluations"
                             element={<EvaluationsList />}
                         />
                         <Route path="/admin/add" element={<AddPlayer />} />

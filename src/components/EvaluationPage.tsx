@@ -5,6 +5,8 @@ import { toast } from "react-toastify";
 import { gameService } from "../services/gameService";
 import { evaluationService } from "../services/evaluationService";
 import { Evaluation, Game } from "../types/game";
+import { HelpCircle } from "lucide-react";
+import { EvaluationHelpModal } from "./EvaluationHelpModal.tsx";
 
 const labelsLiteral = {
     attack: "Ataque",
@@ -23,6 +25,7 @@ export const EvaluationPage = () => {
     const [gameData, setGameData] = useState<Game | null>(null);
     const [evaluatorId, setEvaluatorId] = useState<string>("");
     const [teammateId, setTeammateId] = useState<string>("");
+    const [showHelp, setShowHelp] = useState(false);
     const [ratings, setRatings] = useState({
         attack: 5,
         serve: 5,
@@ -116,8 +119,22 @@ export const EvaluationPage = () => {
     return (
         <div className="max-w-3xl mx-auto p-6">
             <h2 className="text-2xl font-bold mb-4">Iniciar Avaliação</h2>
+
+            {/* Botão de Ajuda */}
+            <button
+                type="button"
+                className="flex items-center gap-2 text-blue-500 hover:underline mb-4"
+                onClick={() => setShowHelp(true)}
+            >
+                <HelpCircle className="w-5 h-5" />
+                Como funciona a avaliação?
+            </button>
+
+            <EvaluationHelpModal
+                isOpen={showHelp}
+                onClose={() => setShowHelp(false)}
+            />
             <form onSubmit={handleSubmit}>
-                {/* Seleciona quem você é */}
                 <div className="mb-4">
                     <label className="block font-medium mb-2">
                         Selecione quem você é:

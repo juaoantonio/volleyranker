@@ -49,7 +49,6 @@ export const EvaluationPage = () => {
     });
 
     // Busca as avaliações já realizadas pelo avaliador atual para este jogo.
-    // Essa query é ativada somente quando evaluatorId e gameId estiverem definidos.
     const { data: evaluationsByEvaluator } = useQuery<Evaluation[]>({
         queryKey: ["evaluations", gameId, evaluatorId],
         enabled: !!gameId && !!evaluatorId,
@@ -88,6 +87,16 @@ export const EvaluationPage = () => {
         if (!team) return [];
         return team.players.filter((player) => player.id !== evaluatorId);
     };
+
+    // Lista dos jogadores que ainda não foram avaliados
+    const pendingEvaluations = evaluatorId
+        ? teammates().filter(
+              (player) =>
+                  !evaluationsByEvaluator?.some(
+                      (ev) => ev.evaluatedId === player.id,
+                  ),
+          )
+        : [];
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -134,6 +143,7 @@ export const EvaluationPage = () => {
                 isOpen={showHelp}
                 onClose={() => setShowHelp(false)}
             />
+
             <form onSubmit={handleSubmit}>
                 <div className="mb-4">
                     <label className="block font-medium mb-2">
@@ -186,6 +196,26 @@ export const EvaluationPage = () => {
                                 );
                             })}
                         </select>
+                    </div>
+                )}
+
+                {/* Seção para exibir os jogadores que ainda não foram avaliados */}
+                {evaluatorId && (
+                    <div className="mb-4">
+                        <h3 className="text-lg font-bold mb-2">
+                            Jogadores pendentes de avaliação
+                        </h3>
+                        {pendingEvaluations.length > 0 ? (
+                            <ul className="list-disc list-inside">
+                                {pendingEvaluations.map((player) => (
+                                    <li key={player.id}>{player.name}</li>
+                                ))}
+                            </ul>
+                        ) : (
+                            <p className="text-gray-600">
+                                Você já avaliou todos os seus companheiros.
+                            </p>
+                        )}
                     </div>
                 )}
 

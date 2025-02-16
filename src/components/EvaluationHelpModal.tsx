@@ -10,22 +10,12 @@ import {
     Zap,
 } from "lucide-react";
 import { ReactElement } from "react";
+import { labelsLiteral } from "../constants.tsx";
 
 interface HelpModalProps {
     isOpen: boolean;
     onClose: () => void;
 }
-
-const labelsLiteral = {
-    attack: "Ataque",
-    serve: "Eficiência no Saque",
-    set: "Levantamento",
-    defense: "Defesa",
-    positioning: "Posicionamento",
-    reception: "Recepção",
-    consistency: "Constância",
-    block: "Bloqueio",
-};
 
 const descriptions = {
     attack: "0-1: Ataques fracos e imprecisos.\n2-3: Ataques razoáveis, mas inconsistentes.\n4-5: Ataques potentes, decisivos e variados.",

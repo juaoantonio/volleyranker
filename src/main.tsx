@@ -18,6 +18,7 @@ import { TeamGenerator } from "./components/TeamGenerator.tsx";
 import { GameDetail } from "./components/GameDetail.tsx";
 import { GameList } from "./components/GameList.tsx";
 import { EvaluationPage } from "./components/EvaluationPage.tsx";
+import { EvaluationsList } from "./components/EvaluationsList.tsx";
 
 export const queryClient = new QueryClient();
 
@@ -27,11 +28,13 @@ createRoot(document.getElementById("root")!).render(
             <QueryClientProvider client={queryClient}>
                 <Routes>
                     {/* Rotas públicas */}
-              
- <Route element={<PublicRoute />}>
-<Route path="/games/:id/evaluation" element={<EvaluationPage />} />
-                    
- 
+
+                    <Route element={<PublicRoute />}>
+                        <Route
+                            path="/games/:id/evaluation"
+                            element={<EvaluationPage />}
+                        />
+
                         <Route path="/login" element={<Login />} />
                         <Route path="/" element={<PlayersRanking />} />
                         <Route path="/team" element={<TeamGenerator />} />
@@ -46,13 +49,16 @@ createRoot(document.getElementById("root")!).render(
                     {/* Rotas protegidas */}
                     <Route element={<ProtectedRoute />}>
                         <Route path="/admin/" element={<Players />} />
+                        <Route
+                            path="/admin/:id/evaluations/"
+                            element={<EvaluationsList />}
+                        />
                         <Route path="/admin/add" element={<AddPlayer />} />
                         <Route
                             path="/admin/edit/:id"
                             element={<EditPlayer />}
                         />
-</Route>
-                        
+                    </Route>
                 </Routes>
 
                 <ToastContainer />

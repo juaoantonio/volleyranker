@@ -8,6 +8,17 @@ import {
     Volleyball,
 } from "lucide-react";
 
+export const labelsLiteral = {
+    attack: "Ataque",
+    serve: "Eficiência no Saque",
+    set: "Levantamento",
+    defense: "Defesa",
+    positioning: "Posicionamento",
+    reception: "Recepção",
+    consistency: "Constância",
+    block: "Bloqueio",
+};
+
 export const playerAttributes = [
     {
         label: "Ataque",

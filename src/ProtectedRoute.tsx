@@ -12,7 +12,7 @@ export const ProtectedRoute = () => {
     return (
         <>
             <Navbar />
-            <div className={"h-[calc(100vh-3.8rem)] px-2 py-4"}>
+            <div className={"h-[calc(100vh-3.8rem)] px-4 py-4 pt-20"}>
                 <Outlet />
             </div>
         </>

@@ -8,8 +8,6 @@ import { ToastContainer } from "react-toastify";
 import { Login } from "./components/Login.tsx";
 import { ProtectedRoute } from "./ProtectedRoute.tsx";
 import { PublicRoute } from "./PublicRoute.tsx";
-
-import { Players } from "./pages/Players.tsx";
 import { AddPlayer } from "./components/AddPlayer.tsx";
 import { EditPlayer } from "./components/EditPlayer.tsx";
 import { PlayerDetail } from "./components/PlayerDetail.tsx";
@@ -48,7 +46,6 @@ createRoot(document.getElementById("root")!).render(
 
                     {/* Rotas protegidas */}
                     <Route element={<ProtectedRoute />}>
-                        <Route path="/admin/" element={<Players />} />
                         <Route
                             path="/games/:id/evaluations"
                             element={<EvaluationsList />}

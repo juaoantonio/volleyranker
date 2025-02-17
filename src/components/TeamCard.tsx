@@ -43,12 +43,11 @@ export const TeamCard = ({ team, index }: { team: Team; index: number }) => {
     return (
         <div className="flex flex-col gap-4 rounded-lg border bg-white p-4 shadow-lg">
             <div className="flex flex-col items-start justify-between sm:flex-row sm:items-center">
-                <h3 className="mb-2 text-xl font-bold text-blue-600 sm:mb-0">
+                <h3 className="text-primary mb-2 text-xl font-bold sm:mb-0">
                     Time {index + 1}
                 </h3>
                 <div className="text-lg font-semibold">
-                    Overall do Time:{" "}
-                    <span className="text-green-600">{advancedScore}</span>
+                    Overall do Time: <span>{advancedScore}</span>
                 </div>
             </div>
 

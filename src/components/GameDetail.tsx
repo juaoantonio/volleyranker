@@ -13,6 +13,23 @@ import { calculateRelativeAdjustments } from "../utils.ts";
 import { useAuth } from "../hooks/useAuth.ts";
 import { Loading } from "./loading.tsx";
 
+// Componentes shadcn UI
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
+
+// Ícones do Lucide
+import {
+    Calendar,
+    CheckCircle,
+    Clock,
+    DollarSign,
+    Play,
+    Save,
+    Trash2,
+    User,
+} from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar.tsx";
+
 export const GameDetail = () => {
     const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
@@ -20,7 +37,7 @@ export const GameDetail = () => {
     const { setTeams, teams } = useTeamStore();
     const [gameData, setGameData] = useState<Game | null>(null);
 
-    // Busca o jogo no Firestore pelo ID
+    // Consulta do jogo pelo ID
     const { isPending, isError } = useQuery({
         queryKey: ["game", id],
         enabled: !!id,
@@ -32,7 +49,7 @@ export const GameDetail = () => {
         },
     });
 
-    // Mutação para atualizar o jogo no Firestore
+    // Mutação para atualizar o jogo
     const updateMutation = useMutation({
         mutationFn: async (updatedGame: Game) => {
             await gameService.updateGame(id!, updatedGame);
@@ -44,14 +61,14 @@ export const GameDetail = () => {
         onError: () => toast.error("Erro ao atualizar o jogo ❌"),
     });
 
-    // Mutação para deletar o jogo do Firestore
+    // Mutação para deletar o jogo
     const deleteMutation = useMutation({
         mutationFn: async () => {
             await gameService.deleteGame(id!);
         },
         onSuccess: () => {
             toast.success("Jogo removido com sucesso! ✅");
-            navigate("/"); // Redireciona para a página inicial
+            navigate("/");
         },
         onError: () => toast.error("Erro ao remover o jogo ❌"),
     });
@@ -59,7 +76,7 @@ export const GameDetail = () => {
     useEffect(() => {
         if (!teams) return;
         setGameData((prev) => (prev ? { ...prev, teams: teams } : null));
-    }, [teams, setGameData]);
+    }, [teams]);
 
     const handleUpdateGame = () => {
         if (!gameData) return;
@@ -75,13 +92,11 @@ export const GameDetail = () => {
     // Atualiza o estado do pagamento de um jogador
     const handleTogglePayment = (playerId: string) => {
         if (!gameData) return;
-
         const updatedPayments = gameData.payments?.map((payment) =>
             payment.playerId === playerId
                 ? { ...payment, hasPaid: !payment.hasPaid }
                 : payment,
         );
-
         setGameData((prev) =>
             prev ? { ...prev, payments: updatedPayments } : null,
         );
@@ -94,7 +109,6 @@ export const GameDetail = () => {
             const evaluations = await evaluationService.getEvaluationsByGameId(
                 gameData.id!,
             );
-
             // Agrupa as avaliações por jogador avaliado
             const evaluationsByPlayer = evaluations.reduce(
                 (acc, evaluation) => {
@@ -110,12 +124,9 @@ export const GameDetail = () => {
             // Processa as avaliações para cada jogador
             for (const playerId in evaluationsByPlayer) {
                 const evals = evaluationsByPlayer[playerId];
-
-                // Busca o jogador correspondente dentro dos dados do jogo
                 const player = gameData.players?.find((p) => p.id === playerId);
                 if (!player) continue;
 
-                // Calcula os ajustes com base no valor atual do jogador
                 const adjustments = calculateRelativeAdjustments(
                     evals,
                     {
@@ -128,7 +139,7 @@ export const GameDetail = () => {
                         consistency: player.consistency,
                         block: player.block,
                     },
-                    0.1, // scalingFactor – ajuste conforme necessário
+                    0.1,
                 );
 
                 const updatedPlayer: Player = {
@@ -143,7 +154,6 @@ export const GameDetail = () => {
                     block: player.block + adjustments.block,
                 };
 
-                // Atualiza o jogador no Firestore (supondo que a função updatePlayer esteja implementada)
                 await updatePlayer(updatedPlayer.id!, updatedPlayer);
             }
 
@@ -156,38 +166,37 @@ export const GameDetail = () => {
     };
 
     if (isPending) return <Loading />;
-
     if (isError)
         return <p className="text-center">Não foi possível encontrar o jogo</p>;
 
-    // Contador de jogadores que já pagaram
     const paidCount = gameData?.payments?.filter((p) => p.hasPaid).length || 0;
     const totalPlayers = gameData?.players?.length || 0;
 
     return (
-        <div className="max-w-5xl mx-auto p-6">
-            <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-                <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
+        <div className="mx-auto max-w-5xl space-y-4">
+            <div>
+                <div className="text-center text-xl font-bold text-gray-800">
                     {user ? "⚡ Editar Detalhes do Jogo" : "Detalhes do Jogo"}
-                </h2>
-
+                </div>
                 {!user && (
-                    <p className="text-center text-sm text-gray-600 mb-4">
+                    <p className="text-center text-sm text-gray-600">
                         Você está visualizando apenas os detalhes do jogo.
                     </p>
                 )}
-
+            </div>
+            <div className="space-y-6">
                 {/* Contador de pagamentos */}
-                <div className="text-lg font-semibold text-center text-green-600 mb-4">
+                <div className="text-center text-lg font-semibold text-green-600">
+                    <CheckCircle className="mr-2 inline-block h-6 w-6" />
                     Pagamentos: {paidCount} / {totalPlayers}
                 </div>
 
                 {/* Lista de jogadores e pagamentos */}
-                <div className="mb-6">
-                    <h3 className="text-lg font-bold text-gray-700 mb-2">
-                        Jogadores e Pagamentos:
+                <div>
+                    <h3 className="mb-2 text-lg font-bold text-gray-700">
+                        Jogadores e Pagamentos
                     </h3>
-                    <ul className="border p-4 rounded-lg bg-gray-100 max-h-64 overflow-auto">
+                    <ul className="max-h-64 space-y-2 overflow-auto rounded-lg border bg-gray-50 p-4">
                         {gameData?.players?.map((player) => {
                             const payment = gameData?.payments?.find(
                                 (p) => p.playerId === player.id,
@@ -195,8 +204,28 @@ export const GameDetail = () => {
                             return (
                                 <li
                                     key={player.id}
-                                    className="flex items-center justify-between bg-white p-2 rounded-md border shadow-sm mb-2"
+                                    className="flex items-center justify-between rounded-md border bg-white p-2 shadow-sm"
                                 >
+                                    <Avatar className="h-8 w-8">
+                                        {player.imageUrl ? (
+                                            <>
+                                                <AvatarImage
+                                                    src={player.imageUrl}
+                                                    alt={player.name}
+                                                />
+                                                <AvatarFallback>
+                                                    {player.name[0]}
+                                                </AvatarFallback>
+                                            </>
+                                        ) : (
+                                            <AvatarFallback>
+                                                <User
+                                                    size={20}
+                                                    className="text-gray-500"
+                                                />
+                                            </AvatarFallback>
+                                        )}
+                                    </Avatar>
                                     <span className="font-semibold">
                                         {player.name}
                                     </span>
@@ -208,7 +237,7 @@ export const GameDetail = () => {
                                             onChange={() =>
                                                 handleTogglePayment(player.id!)
                                             }
-                                            className="w-5 h-5"
+                                            className="h-5 w-5"
                                         />
                                         <span className="text-sm">Pago</span>
                                     </label>
@@ -218,13 +247,14 @@ export const GameDetail = () => {
                     </ul>
                 </div>
 
-                {/* Inputs de horário */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Inputs de data e horário */}
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                     <div>
-                        <label className="block text-gray-700 font-medium mb-1">
+                        <label className="mb-1 block font-medium text-gray-700">
+                            <Calendar className="mr-1 inline-block h-5 w-5 text-gray-500" />
                             Data do Jogo:
                         </label>
-                        <input
+                        <Input
                             type="date"
                             disabled={!user}
                             value={
@@ -246,15 +276,15 @@ export const GameDetail = () => {
                                     date: utcDate,
                                 });
                             }}
-                            className="border p-2 rounded-md w-full"
+                            className="w-full"
                         />
                     </div>
-
                     <div>
-                        <label className="block text-gray-700 font-medium mb-1">
+                        <label className="mb-1 block font-medium text-gray-700">
+                            <Clock className="mr-1 inline-block h-5 w-5 text-gray-500" />
                             Horário de Início:
                         </label>
-                        <input
+                        <Input
                             type="time"
                             disabled={!user}
                             value={gameData?.startTime ?? ""}
@@ -264,15 +294,15 @@ export const GameDetail = () => {
                                     startTime: e.target.value,
                                 })
                             }
-                            className="border p-2 rounded-md w-full"
+                            className="w-full"
                         />
                     </div>
-
                     <div>
-                        <label className="block text-gray-700 font-medium mb-1">
+                        <label className="mb-1 block font-medium text-gray-700">
+                            <Clock className="mr-1 inline-block h-5 w-5 text-gray-500" />
                             Horário de Término:
                         </label>
-                        <input
+                        <Input
                             type="time"
                             disabled={!user}
                             value={gameData?.endTime ?? ""}
@@ -282,17 +312,18 @@ export const GameDetail = () => {
                                     endTime: e.target.value,
                                 })
                             }
-                            className="border p-2 rounded-md w-full"
+                            className="w-full"
                         />
                     </div>
                 </div>
 
                 {/* Taxa do jogo */}
-                <div className="mt-6">
-                    <label className="block text-gray-700 font-medium mb-1">
+                <div>
+                    <label className="mb-1 block font-medium text-gray-700">
+                        <DollarSign className="mr-1 inline-block h-5 w-5 text-gray-500" />
                         Taxa do Jogo (R$):
                     </label>
-                    <input
+                    <Input
                         type="number"
                         disabled={!user}
                         value={gameData?.gameFee}
@@ -303,60 +334,67 @@ export const GameDetail = () => {
                             })
                         }
                         min="0"
-                        className="border p-2 rounded-md w-full"
+                        className="w-full"
                     />
                 </div>
 
                 {/* Listagem dos times */}
-                <div className="mt-6">
-                    <h3 className="text-lg font-bold text-gray-700 mb-2">
-                        Times Criados:
+                <div>
+                    <h3 className="mb-2 text-lg font-bold text-gray-700">
+                        Times Criados
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                         {gameData?.teams?.map((team, index) => (
                             <TeamCard key={index} team={team} index={index} />
                         ))}
                     </div>
                 </div>
 
-                {/* Botões de ação (renderizados somente se o usuário estiver autenticado) */}
-                {user && (
-                    <div className="flex flex-col md:flex-row md:justify-between mt-6 gap-4">
-                        <button
-                            onClick={() => navigate(`/games/${id}/evaluation`)}
-                            className="w-full md:w-auto px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition duration-300"
-                        >
-                            Iniciar Avaliação
-                        </button>
-
-                        <button
-                            onClick={handleDeleteGame}
-                            disabled={deleteMutation.isPending}
-                            className="w-full md:w-auto px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition duration-300"
-                        >
-                            {deleteMutation.isPending
-                                ? "Removendo..."
-                                : "Excluir Jogo"}
-                        </button>
-
-                        <button
-                            onClick={handleApplyEvaluations}
-                            className="w-full md:w-auto px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition duration-300"
-                        >
-                            Aplicar Avaliações
-                        </button>
-
-                        <button
-                            onClick={handleUpdateGame}
-                            disabled={updateMutation.isPending}
-                            className="w-full md:w-auto px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-300"
-                        >
-                            {updateMutation.isPending
-                                ? "Salvando..."
-                                : "Salvar Alterações"}
-                        </button>
-                    </div>
-                )}
+                {/* Botões de ação */}
+                <div className="flex flex-col gap-4 pb-4 md:flex-row md:justify-between">
+                    <Button
+                        onClick={() => navigate(`/games/${id}/evaluation`)}
+                        variant="outline"
+                        className="flex w-full items-center gap-2 md:w-auto"
+                    >
+                        <Play className="h-5 w-5" />
+                        Iniciar Avaliação
+                    </Button>
+                    {user && (
+                        <>
+                            <Button
+                                onClick={handleDeleteGame}
+                                variant="destructive"
+                                disabled={deleteMutation.isPending}
+                                className="flex w-full items-center gap-2 md:w-auto"
+                            >
+                                <Trash2 className="h-5 w-5" />
+                                {deleteMutation.isPending
+                                    ? "Removendo..."
+                                    : "Excluir Jogo"}
+                            </Button>
+                            <Button
+                                onClick={handleApplyEvaluations}
+                                variant="outline"
+                                className="flex w-full items-center gap-2 md:w-auto"
+                            >
+                                <CheckCircle className="h-5 w-5" />
+                                Aplicar Avaliações
+                            </Button>
+                            <Button
+                                onClick={handleUpdateGame}
+                                disabled={updateMutation.isPending}
+                                variant="success"
+                                className="flex w-full items-center gap-2 md:w-auto"
+                            >
+                                <Save className="h-5 w-5" />
+                                {updateMutation.isPending
+                                    ? "Salvando..."
+                                    : "Salvar Alterações"}
+                            </Button>
+                        </>
+                    )}
+                </div>
             </div>
         </div>
     );

@@ -39,4 +39,15 @@ export const evaluationService = {
             await evaluationService.removeEvaluation(evaluation.id!);
         }
     },
+
+    removeEvaluationByPlayerId: async (playerId: string) => {
+        const q = query(
+            evaluationCollectionRef,
+            where("playerId", "==", playerId),
+        );
+        const querySnapshot = await getDocs(q);
+        querySnapshot.forEach((doc) => {
+            evaluationService.removeEvaluation(doc.id);
+        });
+    },
 };

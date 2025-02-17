@@ -1,13 +1,25 @@
-import { useState } from "react";
+import { ReactElement, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { gameService } from "../services/gameService";
 import { evaluationService } from "../services/evaluationService";
 import { Evaluation, Game } from "../types/game";
-import { HelpCircle } from "lucide-react";
-import { EvaluationHelpModal } from "./EvaluationHelpModal.tsx";
-import { Loading } from "./loading.tsx";
+import {
+    Ban,
+    CircleArrowOutDownLeft,
+    HelpCircle,
+    MapPin,
+    Repeat,
+    Send,
+    Shield,
+    Split,
+    Zap,
+} from "lucide-react";
+import { EvaluationHelpModal } from "./EvaluationHelpModal";
+import { Loading } from "./loading";
+import { Button } from "./ui/button";
+import { Input } from "./ui/input";
 
 const labelsLiteral = {
     attack: "Ataque",
@@ -18,6 +30,17 @@ const labelsLiteral = {
     reception: "Recepção",
     consistency: "Constância",
     block: "Bloqueio",
+};
+
+const ratingIcons: { [key: string]: ReactElement } = {
+    attack: <Zap className="h-5 w-5 text-blue-500" />,
+    serve: <Send className="h-5 w-5 text-green-500" />,
+    set: <Split className="h-5 w-5 text-indigo-500" />,
+    defense: <Shield className="h-5 w-5 text-red-500" />,
+    positioning: <MapPin className="h-5 w-5 text-yellow-500" />,
+    reception: <CircleArrowOutDownLeft className="h-5 w-5 text-purple-500" />,
+    consistency: <Repeat className="h-5 w-5 text-teal-500" />,
+    block: <Ban className="h-5 w-5 text-orange-500" />,
 };
 
 export const EvaluationPage = () => {
@@ -49,7 +72,7 @@ export const EvaluationPage = () => {
         },
     });
 
-    // Busca as avaliações já realizadas pelo avaliador atual para este jogo.
+    // Busca as avaliações já realizadas pelo avaliador atual para este jogo
     const { data: evaluationsByEvaluator } = useQuery<Evaluation[]>({
         queryKey: ["evaluations", gameId, evaluatorId],
         enabled: !!gameId && !!evaluatorId,
@@ -73,13 +96,23 @@ export const EvaluationPage = () => {
         onError: () => toast.error("Erro ao salvar avaliação"),
     });
 
+    const removeEvaluationByPlayerIdMutation = useMutation({
+        mutationFn: async (playerId: string) => {
+            await evaluationService.removeEvaluationByPlayerId(playerId);
+        },
+        onSuccess: () => {
+            toast.success("Avaliações removidas com sucesso!");
+        },
+        onError: () => toast.error("Erro ao remover avaliações"),
+    });
+
     if (isLoading) return <Loading />;
     if (isError || !gameData) return <p>Erro ao carregar o jogo</p>;
 
-    // Lista de jogadores do jogo para o seletor "Eu sou"
+    // Lista de jogadores do jogo
     const players = gameData.players || [];
 
-    // Ao selecionar o avaliador, filtra os companheiros (mesmo time)
+    // Filtra os companheiros do avaliador selecionado
     const teammates = () => {
         if (!evaluatorId) return [];
         const team = gameData.teams?.find((team) =>
@@ -89,7 +122,7 @@ export const EvaluationPage = () => {
         return team.players.filter((player) => player.id !== evaluatorId);
     };
 
-    // Lista dos jogadores que ainda não foram avaliados
+    // Lista dos jogadores que ainda não foram avaliados pelo avaliador
     const pendingEvaluations = evaluatorId
         ? teammates().filter(
               (player) =>
@@ -105,8 +138,6 @@ export const EvaluationPage = () => {
             toast.error("Selecione o avaliador e o jogador a ser avaliado.");
             return;
         }
-
-        // Verifica se o avaliador já avaliou esse companheiro
         const alreadyEvaluated = evaluationsByEvaluator?.some(
             (ev) => ev.evaluatedId === teammateId,
         );
@@ -114,7 +145,6 @@ export const EvaluationPage = () => {
             toast.error("Você já avaliou esse jogador.");
             return;
         }
-
         const evaluation: Evaluation = {
             gameId,
             evaluatorId,
@@ -122,146 +152,194 @@ export const EvaluationPage = () => {
             ratings,
             createdAt: new Date().toISOString(),
         };
-
         createEvaluationMutation.mutate(evaluation);
     };
 
     return (
-        <div className="max-w-3xl mx-auto p-6">
-            <h2 className="text-2xl font-bold mb-4">Iniciar Avaliação</h2>
-
-            {/* Botão de Ajuda */}
-            <button
-                type="button"
-                className="flex items-center gap-2 text-blue-500 hover:underline mb-4"
-                onClick={() => setShowHelp(true)}
-            >
-                <HelpCircle className="w-5 h-5" />
-                Como funciona a avaliação?
-            </button>
-
-            <EvaluationHelpModal
-                isOpen={showHelp}
-                onClose={() => setShowHelp(false)}
-            />
-
-            <form onSubmit={handleSubmit}>
-                <div className="mb-4">
-                    <label className="block font-medium mb-2">
-                        Selecione quem você é:
-                    </label>
-                    <select
-                        value={evaluatorId}
-                        onChange={(e) => {
-                            setEvaluatorId(e.target.value);
-                            // Reseta a seleção do companheiro quando o avaliador mudar
-                            setTeammateId("");
-                        }}
-                        className="border p-2 rounded-md w-full"
-                    >
-                        <option value="">Selecione...</option>
-                        {players.map((player) => (
-                            <option key={player.id} value={player.id}>
-                                {player.name}
-                            </option>
-                        ))}
-                    </select>
+        <div className="mx-auto max-w-3xl space-y-6">
+            <div>
+                <div className="bg-gray-100 py-4">
+                    <div className="text-center text-2xl font-bold text-gray-800">
+                        Iniciar Avaliação
+                    </div>
+                    <p className="text-center text-sm text-gray-600">
+                        {evaluatorId
+                            ? "Preencha os dados abaixo para avaliar seu companheiro."
+                            : "Selecione quem você é para iniciar a avaliação."}
+                    </p>
                 </div>
-
-                {/* Seleciona o jogador a ser avaliado (somente companheiros) */}
-                {evaluatorId && (
-                    <div className="mb-4">
-                        <label className="block font-medium mb-2">
-                            Selecione o jogador a ser avaliado:
-                        </label>
-                        <select
-                            value={teammateId}
-                            onChange={(e) => setTeammateId(e.target.value)}
-                            className="border p-2 rounded-md w-full"
-                        >
-                            <option value="">Selecione...</option>
-                            {teammates().map((player) => {
-                                const alreadyEvaluated =
-                                    evaluationsByEvaluator?.some(
-                                        (ev) => ev.evaluatedId === player.id,
-                                    );
-                                return (
-                                    <option
-                                        key={player.id}
-                                        value={player.id}
-                                        disabled={alreadyEvaluated}
-                                    >
-                                        {player.name}{" "}
-                                        {alreadyEvaluated ? "(Avaliado)" : ""}
-                                    </option>
-                                );
-                            })}
-                        </select>
-                    </div>
-                )}
-
-                {/* Seção para exibir os jogadores que ainda não foram avaliados */}
-                {evaluatorId && (
-                    <div className="mb-4">
-                        <h3 className="text-lg font-bold mb-2">
-                            Jogadores pendentes de avaliação
-                        </h3>
-                        {pendingEvaluations.length > 0 ? (
-                            <ul className="list-disc list-inside">
-                                {pendingEvaluations.map((player) => (
-                                    <li key={player.id}>{player.name}</li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <p className="text-gray-600">
-                                Você já avaliou todos os seus companheiros.
-                            </p>
-                        )}
-                    </div>
-                )}
-
-                {/* Formulário de avaliação */}
-                {teammateId && (
-                    <div className="mb-4">
-                        <h3 className="text-lg font-bold mb-2">
-                            Avalie os seguintes aspectos:
-                        </h3>
-                        {Object.keys(ratings).map((stat) => (
-                            <div key={stat} className="mb-2">
-                                <label className="block font-medium mb-1">
-                                    {
-                                        labelsLiteral[
-                                            stat as keyof typeof labelsLiteral
-                                        ]
-                                    }
-                                </label>
-                                <input
-                                    type="number"
-                                    value={(ratings as any)[stat]}
-                                    onChange={(e) =>
-                                        setRatings((prev) => ({
-                                            ...prev,
-                                            [stat]: Number(e.target.value),
-                                        }))
-                                    }
-                                    max="5"
-                                    className="border p-2 rounded-md w-full"
-                                />
-                            </div>
-                        ))}
-                    </div>
-                )}
-
-                <button
-                    type="submit"
-                    disabled={createEvaluationMutation.isPending}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+                <Button
+                    className={"my-4"}
+                    variant="ghost"
+                    onClick={() => setShowHelp(true)}
                 >
-                    {createEvaluationMutation.isPending
-                        ? "Salvando..."
-                        : "Salvar Avaliação"}
-                </button>
-            </form>
+                    <HelpCircle className="text-primary h-5 w-5" />
+                    <span>Como funciona a avaliação?</span>
+                </Button>
+                <div className="space-y-6">
+                    <EvaluationHelpModal
+                        isOpen={showHelp}
+                        onClose={() => setShowHelp(false)}
+                    />
+
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {/* Seletor do avaliador */}
+                        <div>
+                            <label className="mb-2 block font-medium">
+                                Selecione quem você é:
+                            </label>
+                            <select
+                                value={evaluatorId}
+                                onChange={(e) => {
+                                    setEvaluatorId(e.target.value);
+                                    setTeammateId("");
+                                }}
+                                className="w-full rounded-md border p-2"
+                            >
+                                <option value="">Selecione...</option>
+                                {players.map((player) => (
+                                    <option key={player.id} value={player.id}>
+                                        {player.name}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Seletor do companheiro a ser avaliado */}
+                        {evaluatorId && (
+                            <div>
+                                <label className="mb-2 block font-medium">
+                                    Selecione o jogador a ser avaliado:
+                                </label>
+                                <select
+                                    value={teammateId}
+                                    onChange={(e) =>
+                                        setTeammateId(e.target.value)
+                                    }
+                                    className="w-full rounded-md border p-2"
+                                >
+                                    <option value="">Selecione...</option>
+                                    {teammates().map((player) => {
+                                        const alreadyEvaluated =
+                                            evaluationsByEvaluator?.some(
+                                                (ev) =>
+                                                    ev.evaluatedId ===
+                                                    player.id,
+                                            );
+                                        return (
+                                            <option
+                                                key={player.id}
+                                                value={player.id}
+                                                disabled={alreadyEvaluated}
+                                            >
+                                                {player.name}{" "}
+                                                {alreadyEvaluated
+                                                    ? "(Avaliado)"
+                                                    : ""}
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+                        )}
+
+                        {/* Exibição dos jogadores pendentes de avaliação */}
+                        {evaluatorId && (
+                            <div>
+                                <h3 className="mb-2 text-lg font-bold">
+                                    Jogadores pendentes de avaliação
+                                </h3>
+                                {pendingEvaluations.length > 0 ? (
+                                    <ul className="list-inside list-disc">
+                                        {pendingEvaluations.map((player) => (
+                                            <li key={player.id}>
+                                                {player.name}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                ) : (
+                                    <p className="text-gray-600">
+                                        Você já avaliou todos os seus
+                                        companheiros.
+                                    </p>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Formulário de avaliação */}
+                        {teammateId && (
+                            <div className="space-y-4">
+                                <h3 className="mb-2 text-lg font-bold">
+                                    Avalie os seguintes aspectos:
+                                </h3>
+                                {Object.keys(ratings).map((stat) => (
+                                    <div
+                                        key={stat}
+                                        className="flex items-center gap-3"
+                                    >
+                                        {
+                                            ratingIcons[
+                                                stat as keyof typeof ratingIcons
+                                            ]
+                                        }
+                                        <label className="w-40 font-medium">
+                                            {
+                                                labelsLiteral[
+                                                    stat as keyof typeof labelsLiteral
+                                                ]
+                                            }
+                                        </label>
+                                        <Input
+                                            type="number"
+                                            value={(ratings as any)[stat]}
+                                            onChange={(e) =>
+                                                setRatings((prev) => ({
+                                                    ...prev,
+                                                    [stat]: Number(
+                                                        e.target.value,
+                                                    ),
+                                                }))
+                                            }
+                                            max="5"
+                                            className="w-20"
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        <div className={"flex w-full gap-2"}>
+                            <Button
+                                type="submit"
+                                className={"flex-1"}
+                                disabled={createEvaluationMutation.isPending}
+                            >
+                                {createEvaluationMutation.isPending
+                                    ? "Salvando..."
+                                    : "Salvar Avaliação"}
+                            </Button>
+                            <Button
+                                variant={"outline"}
+                                className={"flex-1"}
+                                type="submit"
+                                onClick={() =>
+                                    removeEvaluationByPlayerIdMutation.mutate(
+                                        evaluatorId,
+                                    )
+                                }
+                                disabled={
+                                    removeEvaluationByPlayerIdMutation.isPending ||
+                                    !evaluatorId
+                                }
+                            >
+                                {removeEvaluationByPlayerIdMutation.isPending
+                                    ? "Removendo..."
+                                    : "Remover Avaliaçôes"}
+                            </Button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     );
 };

@@ -11,6 +11,7 @@ import { updatePlayer } from "../services/firebase.ts";
 import { Player } from "../types/player.ts";
 import { calculateRelativeAdjustments } from "../utils.ts";
 import { useAuth } from "../hooks/useAuth.ts";
+import { Loading } from "./loading.tsx";
 
 export const GameDetail = () => {
     const { id } = useParams<{ id: string }>();
@@ -154,7 +155,7 @@ export const GameDetail = () => {
         }
     };
 
-    if (isPending) return <p className="text-center">Carregando...</p>;
+    if (isPending) return <Loading />;
 
     if (isError)
         return <p className="text-center">Não foi possível encontrar o jogo</p>;

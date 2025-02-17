@@ -5,6 +5,7 @@ import { gameService } from "../services/gameService.ts";
 import { Eye, Trash2 } from "lucide-react";
 import { queryClient } from "../main.tsx";
 import { useAuth } from "../hooks/useAuth.ts";
+import { Loading } from "./loading.tsx";
 
 export const GameList = () => {
     // Busca todos os jogos do Firestore
@@ -38,7 +39,7 @@ export const GameList = () => {
         }
     };
 
-    if (isPending) return <p className="text-center">Carregando jogos...</p>;
+    if (isPending) return <Loading />;
 
     if (isError)
         return (

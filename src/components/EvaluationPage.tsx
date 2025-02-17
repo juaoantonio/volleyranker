@@ -7,6 +7,7 @@ import { evaluationService } from "../services/evaluationService";
 import { Evaluation, Game } from "../types/game";
 import { HelpCircle } from "lucide-react";
 import { EvaluationHelpModal } from "./EvaluationHelpModal.tsx";
+import { Loading } from "./loading.tsx";
 
 const labelsLiteral = {
     attack: "Ataque",
@@ -72,7 +73,7 @@ export const EvaluationPage = () => {
         onError: () => toast.error("Erro ao salvar avaliação"),
     });
 
-    if (isLoading) return <p>Carregando...</p>;
+    if (isLoading) return <Loading />;
     if (isError || !gameData) return <p>Erro ao carregar o jogo</p>;
 
     // Lista de jogadores do jogo para o seletor "Eu sou"

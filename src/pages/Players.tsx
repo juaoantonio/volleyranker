@@ -7,12 +7,12 @@ import {
     cn,
     positionColors,
 } from "../utils.ts";
+import { Loading } from "../components/loading.tsx";
 
 export const Players = () => {
     const { players, isLoading, removeMutation } = usePlayers();
 
-    if (isLoading)
-        return <p className="text-center text-gray-600">Carregando...</p>;
+    if (isLoading) return <Loading />;
 
     if (!players?.length) {
         return (

@@ -4,7 +4,7 @@ import {
     ChartContainer,
     ChartTooltip,
     ChartTooltipContent,
-} from "./ui/Chart.tsx";
+} from "./ui/chart.tsx";
 import {
     PolarAngleAxis,
     PolarGrid,
@@ -41,9 +41,9 @@ export const TeamCard = ({ team, index }: { team: Team; index: number }) => {
     };
 
     return (
-        <div className="border rounded-lg shadow-lg p-4 bg-white flex flex-col gap-4">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between">
-                <h3 className="text-xl font-bold text-blue-600 mb-2 sm:mb-0">
+        <div className="flex flex-col gap-4 rounded-lg border bg-white p-4 shadow-lg">
+            <div className="flex flex-col items-start justify-between sm:flex-row sm:items-center">
+                <h3 className="mb-2 text-xl font-bold text-blue-600 sm:mb-0">
                     Time {index + 1}
                 </h3>
                 <div className="text-lg font-semibold">
@@ -55,7 +55,7 @@ export const TeamCard = ({ team, index }: { team: Team; index: number }) => {
             {/* Radar Chart para os dados agregados do time */}
             <ChartContainer
                 config={chartConfig}
-                className="mx-auto w-full max-w-[450px] aspect-square"
+                className="mx-auto aspect-square w-full max-w-[450px]"
             >
                 <RadarChart data={teamRadarData}>
                     <ChartTooltip
@@ -138,24 +138,24 @@ export const PlayerListInTeam = ({
 
     return (
         <div>
-            <h4 className="text-lg font-semibold text-gray-800 mb-2">
+            <h4 className="mb-2 text-lg font-semibold text-gray-800">
                 Jogadores:
             </h4>
             <ul className="space-y-2">
                 {players.map((player) => (
                     <li
                         key={player.id}
-                        className="flex items-center gap-3 border-b pb-2 relative"
+                        className="relative flex items-center gap-3 border-b pb-2"
                     >
                         {/* Avatar */}
                         {player.imageUrl ? (
                             <img
                                 src={player.imageUrl}
                                 alt={player.name}
-                                className="w-10 h-10 rounded-full object-cover"
+                                className="h-10 w-10 rounded-full object-cover"
                             />
                         ) : (
-                            <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
                                 <span className="text-gray-500">🏐</span>
                             </div>
                         )}
@@ -163,13 +163,13 @@ export const PlayerListInTeam = ({
                         {/* Nome e overall */}
                         <div className="flex flex-col">
                             <span className="font-semibold">{player.name}</span>
-                            <span className="text-gray-500 text-sm">
+                            <span className="text-sm text-gray-500">
                                 Overall: {calculateOverall(player)}
                             </span>
                         </div>
 
                         {/* Ícone de troca */}
-                        <div className="ml-auto relative">
+                        <div className="relative ml-auto">
                             <button
                                 onClick={() =>
                                     setOpenDropdown(
@@ -178,15 +178,15 @@ export const PlayerListInTeam = ({
                                             : player.id,
                                     )
                                 }
-                                className="p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition"
+                                className="rounded-full bg-gray-200 p-2 transition hover:bg-gray-300"
                                 title="Trocar jogador"
                             >
-                                <ArrowLeftRight className="text-gray-600 w-5 h-5" />
+                                <ArrowLeftRight className="h-5 w-5 text-gray-600" />
                             </button>
 
                             {/* Dropdown de troca */}
                             {openDropdown === player.id && (
-                                <div className="absolute right-0 mt-2 w-48 bg-white border shadow-lg rounded-md z-10">
+                                <div className="absolute right-0 z-10 mt-2 w-48 rounded-md border bg-white shadow-lg">
                                     <ul className="max-h-48 overflow-y-auto">
                                         {teams
                                             ?.flatMap(
@@ -204,7 +204,7 @@ export const PlayerListInTeam = ({
                                                                 swapCandidate,
                                                             )
                                                         }
-                                                        className="w-full text-left p-2 hover:bg-gray-100 flex items-center gap-2"
+                                                        className="flex w-full items-center gap-2 p-2 text-left hover:bg-gray-100"
                                                     >
                                                         {swapCandidate.imageUrl ? (
                                                             <img
@@ -214,10 +214,10 @@ export const PlayerListInTeam = ({
                                                                 alt={
                                                                     swapCandidate.name
                                                                 }
-                                                                className="w-6 h-6 rounded-full object-cover"
+                                                                className="h-6 w-6 rounded-full object-cover"
                                                             />
                                                         ) : (
-                                                            <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center">
+                                                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200">
                                                                 <span className="text-gray-500">
                                                                     🏐
                                                                 </span>

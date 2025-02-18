@@ -22,30 +22,30 @@ export const Login = () => {
             return;
         }
 
-        router("/admin");
+        router("/");
     };
 
     return (
-        <div className="flex flex-col items-center space-y-4 bg-white p-6 rounded-lg shadow-lg w-96 mx-auto">
+        <div className="mx-auto flex w-96 flex-col items-center space-y-4 rounded-lg bg-white p-6 shadow-lg">
             <h2 className="text-xl font-semibold">Login</h2>
             <input
                 type="email"
                 placeholder="E-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full rounded-md border p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
             />
             <input
                 type="password"
                 placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
+                className="w-full rounded-md border p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
             />
             {error && <p className="text-red-500">{error}</p>}
             <button
                 onClick={handleLogin}
-                className="flex items-center gap-2 bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition"
+                className="flex items-center gap-2 rounded-md bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600"
             >
                 <LogIn size={18} /> Entrar
             </button>

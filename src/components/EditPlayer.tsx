@@ -2,14 +2,14 @@ import { FormEvent, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { usePlayers } from "../hooks/usePlayers";
 import { Player } from "../types/player";
-import { CircleHelp, User } from "lucide-react";
+import { Check, CircleHelp, User } from "lucide-react";
 import { playerAttributes } from "../constants.tsx";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "../services/firebase.ts";
-import { Label } from "./ui/label.tsx";
-import { Input } from "./ui/input.tsx";
 import { Button } from "./ui/button.tsx";
 import { EvaluationHelpModal } from "./EvaluationHelpModal.tsx";
+import { Label } from "./ui/label.tsx";
+import { Input } from "./ui/input.tsx";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar.tsx";
 
 export const EditPlayer = () => {
@@ -97,7 +97,25 @@ export const EditPlayer = () => {
                 onClose={() => setIsOpen(false)}
             />
 
-            <form onSubmit={handleSubmit} className="space-y-6 pb-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
+                {/* Nome do Jogador */}
+                <div>
+                    <label className="mb-1 block font-medium text-gray-700">
+                        Nome do Jogador:
+                    </label>
+                    <div className="flex items-center gap-2 rounded-md border p-2">
+                        <User size={24} className="text-gray-600" />
+                        <input
+                            type="text"
+                            name="name"
+                            value={updatedPlayer.name ?? player.name}
+                            onChange={handleChange}
+                            required
+                            className="w-full p-2 focus:outline-none"
+                        />
+                    </div>
+                </div>
+
                 {/* Upload de Imagem */}
                 <div className={"mb-4 flex items-center justify-center"}>
                     <label htmlFor="image" className={"block cursor-pointer"}>
@@ -121,49 +139,43 @@ export const EditPlayer = () => {
                 </div>
 
                 {/* Grid de Atributos */}
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                    <div className={"flex flex-col gap-2"}>
-                        <Label>Nome do Jogador:</Label>
-                        <div className="flex items-center gap-2">
-                            <User size={24} className="text-gray-600" />
-                            <Input
-                                type="text"
-                                name="name"
-                                placeholder="Nome do Jogador"
-                                value={player.name}
-                                onChange={handleChange}
-                                required
-                                className="w-full"
-                            />
-                        </div>
-                    </div>
-
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     {playerAttributes.map(({ label, name, icon }) => (
-                        <div key={name} className={"flex flex-col gap-2"}>
+                        <div key={name}>
                             <Label>{label} (0 a 5):</Label>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-2 rounded-md border p-2">
                                 {icon}
                                 <Input
                                     type="number"
                                     name={name}
-                                    value={player[name as keyof Player]}
+                                    value={
+                                        updatedPlayer[name as keyof Player] ??
+                                        player[name as keyof Player]
+                                    }
                                     onChange={handleChange}
                                     max="5"
-                                    className="w-full"
                                 />
                             </div>
                         </div>
                     ))}
                 </div>
 
-                {/* Botão de Submissão */}
-                <Button
-                    type="submit"
-                    className="flex w-full items-center justify-center gap-2"
-                >
-                    <User size={20} />
-                    Adicionar Jogador
-                </Button>
+                {/* Botões */}
+                <div className="flex justify-end gap-4">
+                    <button
+                        type="button"
+                        onClick={() => navigate("/")}
+                        className="rounded-md bg-gray-400 px-4 py-2 text-white transition duration-300 hover:bg-gray-500"
+                    >
+                        Cancelar
+                    </button>
+                    <button
+                        type="submit"
+                        className="flex items-center gap-2 rounded-md bg-green-500 px-4 py-2 text-white transition duration-300 hover:bg-green-600"
+                    >
+                        <Check size={18} /> Atualizar Jogador
+                    </button>
+                </div>
             </form>
         </div>
     );

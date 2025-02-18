@@ -31,7 +31,7 @@ export const Navbar = () => {
 
     return (
         <nav className="bg-primary fixed z-20 flex h-16 w-full justify-between p-4 shadow-md">
-            <div className="mx-auto flex w-full max-w-4xl items-center justify-between">
+            <div className="mx-auto flex w-full max-w-300 items-center justify-between">
                 {/* Logo */}
                 <Link
                     to="/"
@@ -99,7 +99,7 @@ export const Navbar = () => {
                                 <Button
                                     onClick={handleLogout}
                                     variant="ghost"
-                                    className="text-destructive hover:text-red-500"
+                                    className="text-destructive bg-white hover:text-red-500"
                                 >
                                     <LogOut size={20} />
                                     <span className="hidden sm:inline">

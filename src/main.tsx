@@ -42,6 +42,7 @@ createRoot(document.getElementById("root")!).render(
                         />
                         <Route path="/games/:id" element={<GameDetail />} />
                         <Route path="/games" element={<GameList />} />
+                        <Route path="/admin/add" element={<AddPlayer />} />
                     </Route>
 
                     {/* Rotas protegidas */}
@@ -50,7 +51,6 @@ createRoot(document.getElementById("root")!).render(
                             path="/games/:id/evaluations"
                             element={<EvaluationsList />}
                         />
-                        <Route path="/admin/add" element={<AddPlayer />} />
                         <Route
                             path="/admin/edit/:id"
                             element={<EditPlayer />}

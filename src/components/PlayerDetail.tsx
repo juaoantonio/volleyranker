@@ -1,16 +1,6 @@
 import { useNavigate, useParams } from "react-router-dom";
 import { usePlayers } from "../hooks/usePlayers";
-import {
-    ArrowLeft,
-    Ban,
-    CircleArrowOutDownLeft,
-    MapPin,
-    Repeat,
-    Send,
-    Shield,
-    Split,
-    Zap,
-} from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { assignPosition, calculateOverall, cn, positionColors } from "../utils";
 import {
     PolarAngleAxis,
@@ -28,19 +18,8 @@ import {
 import { CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
-import { ReactElement } from "react";
 import { Player } from "../types/player";
-
-const iconMapping: { [key: string]: ReactElement } = {
-    attack: <Zap className="h-6 w-6 text-blue-500" />,
-    serve: <Send className="h-6 w-6 text-green-500" />,
-    set: <Split className="h-6 w-6 text-indigo-500" />,
-    defense: <Shield className="h-6 w-6 text-red-500" />,
-    positioning: <MapPin className="h-6 w-6 text-yellow-500" />,
-    reception: <CircleArrowOutDownLeft className="h-6 w-6 text-purple-500" />,
-    consistency: <Repeat className="h-6 w-6 text-teal-500" />,
-    block: <Ban className="h-6 w-6 text-orange-500" />,
-};
+import { iconMapping } from "../constants.tsx";
 
 const statLabels: { [key: string]: string } = {
     attack: "Ataque",

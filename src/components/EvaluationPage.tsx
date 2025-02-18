@@ -1,25 +1,16 @@
-import { ReactElement, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { gameService } from "../services/gameService";
 import { evaluationService } from "../services/evaluationService";
 import { Evaluation, Game } from "../types/game";
-import {
-    Ban,
-    CircleArrowOutDownLeft,
-    HelpCircle,
-    MapPin,
-    Repeat,
-    Send,
-    Shield,
-    Split,
-    Zap,
-} from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import { EvaluationHelpModal } from "./EvaluationHelpModal";
 import { Loading } from "./loading";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
+import { iconMapping } from "../constants.tsx";
 
 const labelsLiteral = {
     attack: "Ataque",
@@ -30,17 +21,6 @@ const labelsLiteral = {
     reception: "Recepção",
     consistency: "Constância",
     block: "Bloqueio",
-};
-
-const ratingIcons: { [key: string]: ReactElement } = {
-    attack: <Zap className="h-5 w-5 text-blue-500" />,
-    serve: <Send className="h-5 w-5 text-green-500" />,
-    set: <Split className="h-5 w-5 text-indigo-500" />,
-    defense: <Shield className="h-5 w-5 text-red-500" />,
-    positioning: <MapPin className="h-5 w-5 text-yellow-500" />,
-    reception: <CircleArrowOutDownLeft className="h-5 w-5 text-purple-500" />,
-    consistency: <Repeat className="h-5 w-5 text-teal-500" />,
-    block: <Ban className="h-5 w-5 text-orange-500" />,
 };
 
 export const EvaluationPage = () => {
@@ -278,8 +258,8 @@ export const EvaluationPage = () => {
                                         className="flex items-center gap-3"
                                     >
                                         {
-                                            ratingIcons[
-                                                stat as keyof typeof ratingIcons
+                                            iconMapping[
+                                                stat as keyof typeof iconMapping
                                             ]
                                         }
                                         <label className="w-40 font-medium">

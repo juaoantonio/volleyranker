@@ -1,16 +1,12 @@
+import { iconMapping, labelsLiteral } from "../constants.tsx";
+import { Button } from "./ui/button";
 import {
-    Ban,
-    Download,
-    MapPin,
-    Repeat,
-    Send,
-    Settings,
-    Shield,
-    X,
-    Zap,
-} from "lucide-react";
-import { ReactElement } from "react";
-import { labelsLiteral } from "../constants.tsx";
+    Dialog,
+    DialogContent,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+} from "./ui/dialog"; // Certifique-se de que este caminho esteja correto
 
 interface HelpModalProps {
     isOpen: boolean;
@@ -32,46 +28,19 @@ const descriptions = {
     block: "0-1: Bloqueios ineficazes.\n2-3: Algumas falhas na leitura de jogadas.\n4-5: Bloqueios bem cronometrados e decisivos.",
 };
 
-const iconMapping: { [key: string]: ReactElement } = {
-    attack: <Zap className="w-6 h-6 text-blue-500" />,
-    serve: <Send className="w-6 h-6 text-green-500" />,
-    set: <Settings className="w-6 h-6 text-indigo-500" />,
-    defense: <Shield className="w-6 h-6 text-red-500" />,
-    positioning: <MapPin className="w-6 h-6 text-yellow-500" />,
-    reception: <Download className="w-6 h-6 text-purple-500" />,
-    consistency: <Repeat className="w-6 h-6 text-teal-500" />,
-    block: <Ban className="w-6 h-6 text-orange-500" />,
-};
-
 export const EvaluationHelpModal = ({ isOpen, onClose }: HelpModalProps) => {
-    if (!isOpen) return null;
-
     return (
-        // Ao clicar no backdrop, fecha o modal
-        <div
-            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
-            onClick={onClose}
-        >
-            {/* Container responsivo com scroll e clique interrompido para evitar fechamento acidental */}
-            <div
-                className="bg-white p-6 sm:p-8 rounded-lg shadow-md w-full max-w-lg relative max-h-[90vh] overflow-y-auto"
-                onClick={(e) => e.stopPropagation()}
-            >
-                <button
-                    onClick={onClose}
-                    className="absolute top-2 right-2 text-gray-600 hover:text-gray-900"
-                >
-                    <X className="w-5 h-5" />
-                </button>
-
-                <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
-                    Guia de Avaliação
-                </h3>
-
-                <div className="space-y-4">
+        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent className={"max-h-[90vh] overflow-y-auto"}>
+                <DialogHeader>
+                    <DialogTitle className="flex items-center gap-2 text-lg font-bold">
+                        Guia de Avaliação
+                    </DialogTitle>
+                </DialogHeader>
+                <div className="mt-4 space-y-4">
                     {Object.entries(descriptions).map(([key, desc]) => (
                         <div key={key} className="flex items-start">
-                            <div className="mr-3 mt-1">{iconMapping[key]}</div>
+                            <div className="mt-1 mr-3">{iconMapping[key]}</div>
                             <div>
                                 <p className="font-bold text-gray-800">
                                     {
@@ -80,21 +49,22 @@ export const EvaluationHelpModal = ({ isOpen, onClose }: HelpModalProps) => {
                                         ]
                                     }
                                 </p>
-                                <p className="text-gray-600 whitespace-pre-line">
+                                <p className="whitespace-pre-line text-gray-600">
                                     {desc}
                                 </p>
                             </div>
                         </div>
                     ))}
                 </div>
-
-                <button
-                    onClick={onClose}
-                    className="mt-6 px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 w-full"
-                >
-                    Fechar
-                </button>
-            </div>
-        </div>
+                <DialogFooter className="mt-6">
+                    <Button
+                        onClick={onClose}
+                        className="w-full bg-red-500 text-white hover:bg-red-600"
+                    >
+                        Fechar
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     );
 };

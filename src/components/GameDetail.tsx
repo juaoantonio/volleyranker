@@ -212,6 +212,9 @@ export const GameDetail = () => {
                                                 <AvatarImage
                                                     src={player.imageUrl}
                                                     alt={player.name}
+                                                    className={
+                                                        "aspect-auto object-cover"
+                                                    }
                                                 />
                                                 <AvatarFallback>
                                                     {player.name[0]}

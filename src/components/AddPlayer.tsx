@@ -9,6 +9,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Label } from "./ui/label";
 import { EvaluationHelpModal } from "./EvaluationHelpModal.tsx";
+import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar.tsx";
 
 export const AddPlayer = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -106,27 +107,47 @@ export const AddPlayer = () => {
             <form onSubmit={handleSubmit} className="space-y-6 pb-4">
                 {/* Upload de Imagem */}
                 <div className={"mb-4 flex items-center justify-center"}>
-                    {imageFile ? (
-                        <label
-                            htmlFor="image"
-                            className={"block cursor-pointer"}
-                        >
-                            <img
-                                src={player.imageUrl}
-                                alt="Player"
-                                className={"h-20 w-20 rounded-full"}
-                            />
-                        </label>
-                    ) : (
-                        <label
-                            className={
-                                "flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-gray-100"
-                            }
-                            htmlFor={"image"}
-                        >
-                            <User size={36} className={"text-gray-700"} />
-                        </label>
-                    )}
+                    {/*{imageFile ? (*/}
+                    {/*    <label*/}
+                    {/*        htmlFor="image"*/}
+                    {/*        className={"block cursor-pointer"}*/}
+                    {/*    >*/}
+                    {/*        <img*/}
+                    {/*            src={player.imageUrl}*/}
+                    {/*            alt="Player"*/}
+                    {/*            className={"h-20 w-20 rounded-full"}*/}
+                    {/*        />*/}
+                    {/*    </label>*/}
+                    {/*) : (*/}
+                    {/*    <label*/}
+                    {/*        className={*/}
+                    {/*            "flex h-20 w-20 cursor-pointer items-center justify-center rounded-full bg-gray-100"*/}
+                    {/*        }*/}
+                    {/*        htmlFor={"image"}*/}
+                    {/*    >*/}
+                    {/*        <User size={36} className={"text-gray-700"} />*/}
+                    {/*    </label>*/}
+                    {/*)}*/}
+                    <label htmlFor="image" className={"block cursor-pointer"}>
+                        <Avatar className="h-32 w-32">
+                            {player.imageUrl ? (
+                                <>
+                                    <AvatarImage
+                                        src={player.imageUrl}
+                                        alt={player.name}
+                                        className={"aspect-auto object-cover"}
+                                    />
+                                    <AvatarFallback>
+                                        {player.name[0]}
+                                    </AvatarFallback>
+                                </>
+                            ) : (
+                                <AvatarFallback>
+                                    <User size={32} className="text-gray-500" />
+                                </AvatarFallback>
+                            )}
+                        </Avatar>
+                    </label>
                     <input
                         id={"image"}
                         type="file"

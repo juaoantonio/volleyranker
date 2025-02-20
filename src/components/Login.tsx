@@ -2,6 +2,8 @@ import { useState } from "react";
 import { loginWithEmail } from "../services/auth.ts";
 import { LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Input } from "./ui/input.tsx";
+import { Button } from "./ui/button.tsx";
 
 export const Login = () => {
     const [email, setEmail] = useState("");
@@ -26,29 +28,26 @@ export const Login = () => {
     };
 
     return (
-        <div className="mx-auto flex w-96 flex-col items-center space-y-4 rounded-lg bg-white p-6 shadow-lg">
+        <div className="mx-auto flex h-full flex-col items-center justify-center space-y-4 rounded-lg bg-white">
             <h2 className="text-xl font-semibold">Login</h2>
-            <input
+            <Input
                 type="email"
                 placeholder="E-mail"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-md border p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                className="w-full"
             />
-            <input
+            <Input
                 type="password"
                 placeholder="Senha"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full rounded-md border p-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
+                className="w-full"
             />
             {error && <p className="text-red-500">{error}</p>}
-            <button
-                onClick={handleLogin}
-                className="flex items-center gap-2 rounded-md bg-blue-500 px-4 py-2 text-white transition hover:bg-blue-600"
-            >
+            <Button onClick={handleLogin} className={"w-full"}>
                 <LogIn size={18} /> Entrar
-            </button>
+            </Button>
         </div>
     );
 };

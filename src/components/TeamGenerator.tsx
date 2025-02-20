@@ -9,6 +9,9 @@ import { toast } from "react-toastify";
 import { gameService } from "../services/gameService.ts";
 import { Game } from "../types/game.ts";
 import { TeamCard } from "./TeamCard.tsx";
+import { Input } from "./ui/input.tsx";
+import { Label } from "./ui/label.tsx";
+import { Button } from "./ui/button.tsx";
 
 export const TeamGenerator = () => {
     const { players } = usePlayers();
@@ -95,47 +98,47 @@ export const TeamGenerator = () => {
     };
 
     return (
-        <div className="max-w-5xl mx-auto p-6">
-            <div className="bg-white shadow-lg rounded-lg p-6 mb-6">
-                <h2 className="text-2xl font-bold text-center text-gray-800 mb-4">
-                    ⚡ Gerador de Times
+        <div className="mx-auto max-w-5xl">
+            <div className="mb-6 bg-white">
+                <h2 className="mb-4 text-center text-2xl font-bold text-gray-800">
+                    Gerador de Times
                 </h2>
-                <div className="text-center font-semibold text-gray-700 mb-2">
+                <div className="mb-2 text-center font-semibold text-gray-700">
                     Jogadores Selecionados:{" "}
-                    <span className="text-blue-600">
+                    <span className="text-primary">
                         {selectedPlayers.length}
                     </span>{" "}
                     / {players?.length}
                 </div>
 
-                <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
-                    <input
+                <div className="mb-4 flex flex-col items-center gap-4 md:flex-row">
+                    <Input
                         type="text"
                         placeholder="Pesquisar jogadores..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="border p-2 rounded-md w-full"
+                        className="w-full"
                     />
-                    <label className="flex items-center gap-2 cursor-pointer">
-                        <input
+                    <Label className="flex cursor-pointer items-center gap-2">
+                        <Input
                             type="checkbox"
                             checked={allFilteredSelected}
                             onChange={handleSelectAll}
-                            className="w-5 h-5"
+                            className="h-5 w-5"
                         />
                         <span className="text-sm">Selecionar todos</span>
-                    </label>
+                    </Label>
                 </div>
 
                 <div className="mb-4">
-                    <h3 className="text-lg font-bold text-gray-700 mb-2">
+                    <h3 className="mb-2 text-lg font-bold text-gray-700">
                         Selecione os jogadores que participarão:
                     </h3>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 border p-4 rounded-lg bg-gray-100 max-h-64 overflow-auto">
+                    <div className="grid max-h-64 grid-cols-1 gap-3 overflow-auto rounded-lg border bg-gray-100 p-4 md:grid-cols-2">
                         {filteredPlayers.map((player) => (
                             <label
                                 key={player.id}
-                                className="flex items-center gap-3 bg-white p-2 rounded-md border shadow-sm cursor-pointer hover:bg-gray-50"
+                                className="flex cursor-pointer items-center gap-3 rounded-md border bg-white p-2 shadow-sm hover:bg-gray-50"
                             >
                                 <input
                                     type="checkbox"
@@ -143,12 +146,12 @@ export const TeamGenerator = () => {
                                         (p) => p.id === player.id,
                                     )}
                                     onChange={() => handleSelectPlayer(player)}
-                                    className="w-5 h-5"
+                                    className="h-5 w-5"
                                 />
                                 <span className="font-semibold">
                                     {player.name}
                                 </span>
-                                <span className="text-gray-500 text-sm">
+                                <span className="text-sm text-gray-500">
                                     (Overall: {calculateOverall(player)})
                                 </span>
                             </label>
@@ -156,9 +159,9 @@ export const TeamGenerator = () => {
                     </div>
                 </div>
 
-                <div className="flex flex-col md:flex-row justify-center gap-4">
+                <div className="flex flex-col justify-center gap-4 md:flex-row">
                     <div>
-                        <label className="block text-gray-700 font-medium mb-1">
+                        <label className="mb-1 block font-medium text-gray-700">
                             Jogadores por Time:
                         </label>
                         <input
@@ -168,23 +171,23 @@ export const TeamGenerator = () => {
                                 setTeamSize(Number(e.target.value))
                             }
                             min="2"
-                            className="border p-2 rounded-md w-full"
+                            className="w-full rounded-md border p-2"
                             placeholder="Ex: 4"
                         />
                     </div>
                     <div className="flex items-end">
-                        <button
+                        <Button
                             onClick={handleGenerateTeams}
-                            className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition duration-300"
+                            className="w-full"
                         >
                             Gerar Times
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
                 {teams && (
                     <>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                             {teams.map((team, index) => (
                                 <TeamCard
                                     key={index}
@@ -196,7 +199,7 @@ export const TeamGenerator = () => {
 
                         <button
                             onClick={handleSaveGame}
-                            className="w-full mt-6 px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition duration-300"
+                            className="mt-6 w-full rounded-md bg-green-500 px-4 py-2 text-white transition duration-300 hover:bg-green-600"
                             disabled={mutation.isPending}
                         >
                             {mutation.isPending ? "Salvando..." : "Salvar Jogo"}

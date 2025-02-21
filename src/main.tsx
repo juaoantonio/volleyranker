@@ -52,7 +52,7 @@ createRoot(document.getElementById("root")!).render(
                             element={<EvaluationsList />}
                         />
                         <Route
-                            path="/admin/edit/:id"
+                            path="/admin/player/edit/:id"
                             element={<EditPlayer />}
                         />
                     </Route>
@@ -61,5 +61,5 @@ createRoot(document.getElementById("root")!).render(
                 <ToastContainer />
             </QueryClientProvider>
         </BrowserRouter>
-    </StrictMode>,
+    </StrictMode>
 );

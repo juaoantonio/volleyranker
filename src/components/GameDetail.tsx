@@ -139,7 +139,7 @@ export const GameDetail = () => {
                         consistency: player.consistency,
                         block: player.block,
                     },
-                    0.1,
+                    0.18,
                 );
 
                 const updatedPlayer: Player = {

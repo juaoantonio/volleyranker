@@ -71,7 +71,7 @@ export const EvaluationPage = () => {
         },
         onSuccess: () => {
             toast.success("Avaliação salva com sucesso!");
-            navigate(`/games/${gameId}`);
+            navigate(`/games/${gameId}/evaluation`);
         },
         onError: () => toast.error("Erro ao salvar avaliação"),
     });

@@ -71,7 +71,7 @@ export const EvaluationPage = () => {
         },
         onSuccess: () => {
             toast.success("Avaliação salva com sucesso!");
-            navigate(0);
+            navigate(-1);
         },
         onError: () => toast.error("Erro ao salvar avaliação"),
     });

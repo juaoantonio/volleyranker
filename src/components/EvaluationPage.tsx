@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { gameService } from "../services/gameService";
@@ -25,7 +25,6 @@ const labelsLiteral = {
 
 export const EvaluationPage = () => {
     const { id: gameId } = useParams<{ id: string }>();
-    const navigate = useNavigate();
     const [gameData, setGameData] = useState<Game | null>(null);
     const [evaluatorId, setEvaluatorId] = useState<string>("");
     const [teammateId, setTeammateId] = useState<string>("");
@@ -71,7 +70,7 @@ export const EvaluationPage = () => {
         },
         onSuccess: () => {
             toast.success("Avaliação salva com sucesso!");
-            navigate(-1);
+            window.location.reload();
         },
         onError: () => toast.error("Erro ao salvar avaliação"),
     });

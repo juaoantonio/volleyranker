@@ -7,6 +7,10 @@ import { Badge } from "./ui/badge";
 import { Card } from "./ui/card";
 import { Player } from "../types/player.ts";
 import { useAuth } from "../hooks/useAuth.ts";
+import { useMutation } from "@tanstack/react-query";
+import { removePlayer } from "../services/firebase.ts";
+import { toast } from "react-toastify";
+import { queryClient } from "../main.tsx";
 
 interface PlayerCardProps {
     player: Player;
@@ -16,6 +20,33 @@ interface PlayerCardProps {
 export function PlayerCard({ player, index }: PlayerCardProps) {
     const navigate = useNavigate();
     const { user } = useAuth();
+
+    const deletePlayerMutation = useMutation({
+        mutationFn: async () => {
+            await removePlayer(player.id!);
+        },
+        onMutate: () => {
+            toast.info("Removendo jogador...");
+        },
+        onError: () => {
+            toast.dismiss();
+            toast.error("Erro ao remover jogador.");
+        },
+        onSuccess: () => {
+            toast.dismiss();
+            toast.success("Jogador removido com sucesso.");
+        },
+    });
+
+    const handleDeletePlayer = async () => {
+        if (window.confirm("Tem certeza que deseja remover este jogador?")) {
+            deletePlayerMutation.mutate();
+        }
+        await queryClient.invalidateQueries({
+            queryKey: "players",
+        });
+    };
+
     return (
         <Card
             onClick={() => navigate(`/admin/player/${player.id}`)}
@@ -80,7 +111,11 @@ export function PlayerCard({ player, index }: PlayerCardProps) {
                 <div
                     className={"flex w-full items-center justify-stretch gap-2"}
                 >
-                    <Button asChild className="w-full md:w-auto">
+                    <Button
+                        asChild
+                        className="w-full md:w-auto"
+                        onClick={(e) => e.stopPropagation()}
+                    >
                         <Link
                             to={`/admin/player/${player.id}`}
                             className="flex items-center justify-center gap-2"
@@ -95,6 +130,7 @@ export function PlayerCard({ player, index }: PlayerCardProps) {
                                 asChild
                                 variant="outline"
                                 className="w-full md:w-auto"
+                                onClick={(e) => e.stopPropagation()}
                             >
                                 <Link
                                     to={`/admin/player/edit/${player.id}`}
@@ -108,13 +144,12 @@ export function PlayerCard({ player, index }: PlayerCardProps) {
                                 asChild
                                 variant="destructive"
                                 className="w-full md:w-auto"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDeletePlayer();
+                                }}
                             >
-                                <Link
-                                    to={`/admin/player/remove/${player.id}`}
-                                    className="flex items-center justify-center gap-2"
-                                >
-                                    <Trash size={18} />
-                                </Link>
+                                <Trash size={18} />
                             </Button>
                         </>
                     )}
